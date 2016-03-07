@@ -6,7 +6,6 @@ addons:
    source:
    - debian-sid
    packages:
-   - gcc-4.8
-   - g++-4.8
+   - texlive
 
 script: make
