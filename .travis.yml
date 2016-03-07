@@ -3,7 +3,7 @@ cache: apt
 
 addons:
  apt:
-   source:
+   sources:
    - debian-sid
    packages:
    - texlive
