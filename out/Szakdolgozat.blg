@@ -1,0 +1,9 @@
+[0] Config.pm:324> INFO - This is Biber 2.1
+[0] Config.pm:327> INFO - Logfile is '../out/Szakdolgozat.blg'
+[78] biber-darwin:276> INFO - === Mon Feb 29, 2016, 16:25:23
+[78] Biber.pm:333> INFO - Reading '../out/Szakdolgozat.bcf'
+[217] Biber.pm:645> INFO - Found 0 citekeys in bib section 0
+[218] Utils.pm:146> WARN - The file '../out/Szakdolgozat.bcf' does not contain any citations!
+[251] bbl.pm:505> INFO - Writing '../out/Szakdolgozat.bbl' with encoding 'UTF-8'
+[252] bbl.pm:596> INFO - Output to ../out/Szakdolgozat.bbl
+[252] Biber.pm:106> INFO - WARNINGS: 1
