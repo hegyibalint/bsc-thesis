@@ -1,8 +1,10 @@
-sudo: required
-dist: trusty
+sudo: false
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install -y texlive* latexmk
-  
+addons:
+ apt:
+   sources:
+   - debian-sid
+   packages:
+   - texlive
+
 script: make
