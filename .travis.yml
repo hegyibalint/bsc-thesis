@@ -1,0 +1,11 @@
+sudo: false
+cache: apt
+
+addons:
+ apt:
+   sources:
+   - debian-sid
+   packages:
+   - texlive
+
+script: make
