@@ -1,0 +1,32 @@
+\chapter{Introduction}
+\label{chap:introduction}
+
+Today software systems are getting more complex by time. As we develop more and more functionality in safety oriented solutions, we can reach a complexity level, where formal verification isn't enough on it's own to assure a specified behavior. With the introduction of Internet of Things (\textls{IoT}), and new mobile communication technologies, systems are becoming very dynamic, and this transition needs new embedded monitoring solutions.
+
+\section{Complex Event Processing}
+
+Complex event processing (\textls{CEP}) is a set of techniques and tools to help us understand and control event-driven information systems.\citep{Luckham:2001:PEI:515781} A \textls{CEP} framework uses the incoming events, and apply a hierarchical ruleset on the incoming event stream. These rules in our case ({\textls{VIATRA-CEP}) can have temporal expressions. We strongly base the monitoring features on these temporal properties.
+
+Traditionally complex event processors are heavy components built around big frameworks like databases, and modeling frameworks. The aim of this thesis to generate small, but effective code, and run it on embedded environments, where it's impossible to run a full \textls{CEP} software stack.
+
+\section{Verification techniques}
+
+\subsection{Design time verification}
+
+Design time verification, or formal verification is the analysis of a software in the design process. It's mostly based around model driven system development, where we specify the entire software as a model. On this model, we can run analysis to ensure the software always behaves between specification limits. Formal verification is a commonly used process in the verification of safety critical systems, or networking protocols.
+
+As mentioned, the dynamic behavior of a system is taking more part of a modern software system, even in a safety critical cases. As the availability of sensor networks, and advanced communication technologies spreading, distributed components will become an everyday challenge in the verification process.
+
+The problem with formal verification itself is hidden behind its model based approach. While formally verifying a software, the software engineer builds a model, and tests this model against given scenarios, checking for incorrect behavior. But the engineer is the responsible for the specification of the scenarios, and not all cases are obvious. This method can lead situations, where a model may hide a potential hazard, but because no verification showed the incorrect behavior, we find the system verified.
+
+\subsection{Runtime verification}
+
+On behalf of design time verification which is a one time verification process, runtime verification checks the systems behavior while operating. This is beneficial because if an erroneous state in the software is not found at the formal verification stage of development, runtime verification techniques can still detect the faulty state of the software, and react to ensure specified behavior.
+
+Runtime verification components are implemented in form of monitors. Monitors are components which are extracting information about its processes, detecting non specified patterns. For example if a critical component is not reacting in a given time, the monitor can deactivate a controlling component, thus enforcing the safety property of the system.
+
+\section{Realtime Operating System}
+
+The type of an operating system is defined by how the scheduler decides which program to run when. For example, the scheduler used in a multi user operating system (such as Unix) will ensure each user gets a fair amount of the processing time. As another example, the scheduler in a desk top operating system (such as Windows) will try and ensure the computer remains responsive to its user.
+
+The scheduler in a \emph{Real Time Operating System} (\textls{RTOS}) is designed to provide a predictable (normally described as deterministic) execution pattern. This is particularly of interest to embedded systems as embedded systems often have real time requirements. A real time requirements is one that specifies that the embedded system must respond to a certain event within a strictly defined time (the deadline). A guarantee to meet real time requirements can only be made if the behaviour of the operating system's scheduler can be predicted (and is therefore deterministic).\citep{RTOS}
