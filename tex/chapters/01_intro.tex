@@ -1,32 +1,70 @@
 \chapter{Introduction}
 \label{chap:introduction}
 
-Today software systems are getting more complex by time. As we develop more and more functionality in safety oriented solutions, we can reach a complexity level, where formal verification isn't enough on it's own to assure a specified behavior. With the introduction of Internet of Things (\textls{IoT}), and new mobile communication technologies, systems are becoming very dynamic, and this transition needs new embedded monitoring solutions.
+Nowadays, the complexity of software systems is increasing. As we develop more and more functionality in safety oriented solutions, we can reach a complexity level, where formal verification isn't enough on it's own to assure a specified behavior. With the introduction of Internet of Things (\textls{IoT}), and new mobile communication technologies, systems are becoming dynamic, and this transition needs new embedded monitoring solutions.
 
 \section{Complex Event Processing}
 
-Complex event processing (\textls{CEP}) is a set of techniques and tools to help us understand and control event-driven information systems.\citep{Luckham:2001:PEI:515781} A \textls{CEP} framework uses the incoming events, and apply a hierarchical ruleset on the incoming event stream. These rules in our case ({\textls{VIATRA-CEP}) can have temporal expressions. We strongly base the monitoring features on these temporal properties.
+Complex event processing (\textls{CEP}) is a set of techniques and tools to help us understand and control event-driven information systems.\citep{Luckham:2001:PEI:515781}
+\\[2ex]
+The following subsections will introduce the basic components of a complex event processor system.
+\subsection{Framework}
+The frameworks connects the main components of a complex event processing system. These main components are the following.
+\begin{enumerate}
+	\item Definition of the rule syntax (\cref{subsection:rules})
+	\item Rule compilation. This can be a runtime, or design time compilation. Design time compilation is preferred because the compiler can generate the appropriate interfaces.
+	\item Execution. The event processor takes the input events (\cref{subsection:event_streams}), and drive the underlying execution engine.
+\end{enumerate}
 
-Traditionally complex event processors are heavy components built around big frameworks like databases, and modeling frameworks. The aim of this thesis to generate small, but effective code, and run it on embedded environments, where it's impossible to run a full \textls{CEP} software stack.
+\subsection{Input event streams}
+\label{subsection:event_streams}
+The input of an event processor are streams of predefined events. These events can come from various sources, as follows.
+\begin{enumerate}
+	\item Direct event stream handling. This is an imperative approach, because the programmer is responsible for the flow of events.
+	\item\label{item:model} Model change events. The application have an underlying model and framework, and it can notify the event processor in case of various changes (deletion, insertion, update) of the model.
+	\item Databases. This is a special case of \cref{item:model}, where the model is not implemented in the application, but stored in a database.
+\end{enumerate}
+\vspace{1ex}
+If an engine supports it, it is possible to mix input streams, and rules can interconnect these event sources.
+
+\subsection{Rules}
+\label{subsection:rules}
+Event processors provides formalisms to describe rules, which represents events, and operators between events.
+
+The complex nature of the rules comes from the usage of rule reference. One rule might depend on the activation of another rule.
+
+With this functionality, one can build hierarchical system of rules. Instead of creating one big rule\,---if its even possible---\,containing all the functionality, divided smaller, reusable patterns can be written.
+
+\subsection{Conclusion}
+
+Traditionally complex event processors are complex frameworks like databases, and modeling frameworks. The aim of this thesis to generate small, but effective code, and run it on embedded environments, where it's impossible to run a full \textls{CEP} software stack.
 
 \section{Verification techniques}
 
 \subsection{Design time verification}
 
-Design time verification, or formal verification is the analysis of a software in the design process. It's mostly based around model driven system development, where we specify the entire software as a model. On this model, we can run analysis to ensure the software always behaves between specification limits. Formal verification is a commonly used process in the verification of safety critical systems, or networking protocols.
+Design time verification, or formal verification is the analysis of a software in the design process. It's mostly based around model driven system development, where we specify the entire software\,---and hardware if needed---\,as a model. On this model, we can run analysis to ensure that software always behaves according to the specification. Formal verification is a commonly used process in the verification of safety critical systems, or networking protocols.
 
-As mentioned, the dynamic behavior of a system is taking more part of a modern software system, even in a safety critical cases. As the availability of sensor networks, and advanced communication technologies spreading, distributed components will become an everyday challenge in the verification process.
+As mentioned, dynamic behavior takes significant part of a modern software system, even in a safety critical cases. As the availability of sensor networks and advanced communication technologies spreads, distributed components pose a challenge in the verification process.
 
-The problem with formal verification itself is hidden behind its model based approach. While formally verifying a software, the software engineer builds a model, and tests this model against given scenarios, checking for incorrect behavior. But the engineer is the responsible for the specification of the scenarios, and not all cases are obvious. This method can lead situations, where a model may hide a potential hazard, but because no verification showed the incorrect behavior, we find the system verified.
+While formally verifying a software, the software engineer builds a model, and tests this model against given scenarios, searching for incorrect behavior. But the engineer is the responsible for the specification of the scenarios, and not all corner cases are obvious. This method can lead situations, where the system may hide a potential hazard, but because no verification indicated incorrect behavior, we find the system verified.
 
 \subsection{Runtime verification}
 
-On behalf of design time verification which is a one time verification process, runtime verification checks the systems behavior while operating. This is beneficial because if an erroneous state in the software is not found at the formal verification stage of development, runtime verification techniques can still detect the faulty state of the software, and react to ensure specified behavior.
+On behalf of design time verification which is performed while developing the software components, runtime verification checks the systems behavior while operating. This is beneficial because if an erroneous state in the software is not found at the formal verification stage of development, runtime verification techniques can still detect the faulty state of the software, and raise an error. This error can be detected by other components, and\,---if possible\,---resolve this error.
 
-Runtime verification components are implemented in form of monitors. Monitors are components which are extracting information about its processes, detecting non specified patterns. For example if a critical component is not reacting in a given time, the monitor can deactivate a controlling component, thus enforcing the safety property of the system.
+Runtime verification components can be implemented in form of monitors. The monitors' responsibility is to take signals from a software, and compare it to a simplified model inside of the monitor.
+
+Software components can communicate with the monitor via multiple ways. The communication method implies where the monitor is placed.
+\begin{enumerate}
+	\item Directly by calling the monitors' methods. In this case the monitors' methods are called from the monitored process itself. The monitor is placed in the same compilation unit.
+	\item\label{item:agent} Remotely by an agent. An embedded agent component is called from the monitored components, or the agent is actively extracting the monitored softwares' state. The agent then forwards this information to the monitor. The monitor can be virtually everywhere.
+\end{enumerate}
+
+... (Itt kellene arról beszélni, hogy mi lesz a case study-ban)
 
 \section{Realtime Operating System}
 
-The type of an operating system is defined by how the scheduler decides which program to run when. For example, the scheduler used in a multi user operating system (such as Unix) will ensure each user gets a fair amount of the processing time. As another example, the scheduler in a desk top operating system (such as Windows) will try and ensure the computer remains responsive to its user.
+The type of an operating system is defined by how the scheduler decides which program to run and when. For example, the scheduler used in a multi user operating system (such as Unix) will ensure each user gets a fair amount of the processing time. As another example, the scheduler in a desktop operating system (such as Windows) will try and ensure the computer remains responsive to its user.
 
-The scheduler in a \emph{Real Time Operating System} (\textls{RTOS}) is designed to provide a predictable (normally described as deterministic) execution pattern. This is particularly of interest to embedded systems as embedded systems often have real time requirements. A real time requirements is one that specifies that the embedded system must respond to a certain event within a strictly defined time (the deadline). A guarantee to meet real time requirements can only be made if the behaviour of the operating system's scheduler can be predicted (and is therefore deterministic).\citep{RTOS}
+The scheduler in a \emph{Real Time Operating System} (\textls{RTOS}) is designed to provide a predictable\,---normally described as deterministic---\,execution pattern. This is particularly of interest to embedded systems as embedded systems often have real time requirements. A real time requirements is one that specifies that the embedded system must respond to a certain event within a strictly defined time (the deadline). A guarantee to meet real time requirements can only be made if the behaviour of the operating system's scheduler can be predicted (and is therefore deterministic).\citep{RTOS}
