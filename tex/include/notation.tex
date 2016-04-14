@@ -12,20 +12,18 @@
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
 
+%
+% Abbreviations
+%
+\newcommand*{\gpio}{\textls{CEP}\xspace}
+\newcommand*{\cep}{\textls{CEP}\xspace}
+\newcommand*{\iot}{\textls{IoT}\xspace}
+\newcommand*{\cpu}{\textls{CPU}\xspace}
+\newcommand*{\isc}{\textls{I$^2$C}\xspace}
+\newcommand*{\uart}{\textls{UART}\xspace}
+\newcommand*{\rtos}{\textls{RTOS}\xspace}
 
-\newcommand*{\dd}{\mathrm{d}}
-\newcommand*{\T}{\mathrm{T}}
-\newcommand*{\vecarrow}{}\let\vecarrow\vec
-\renewcommand*{\vec}[1]{\bm{\mathrm{#1}}}
-\newcommand*{\krtimes}{}\let\krtimes\otimes
-\newcommand*{\bigkrtimes}{}\let\bigkrtimes\bigotimes
-\newcommand*{\krplus}{}\let\krplus\oplus
-\newcommand*{\bigkrplus}{}\let\bigkrplus\bigoplus
-\newcommand*{\eltimes}{}\let\eltimes\odot
-\newcommand*{\largesigma}{\text{\larger[1]{$\mathsurround=0pt\sigma$}}}
-
-\newcommand*{\mathabbrev}[1]{\textit{\textls{#1}}}
-
+%
 %
 % Figures
 %
@@ -49,43 +47,6 @@
 \newcommand*{\NNpos}{\NN^{+}} % Positive whole numbers
 
 %
-% Operations
-%
-
-\newcommand*{\partialVec}[1]{\partialElement{\vec{#1}}}
-\newcommand*{\partialElement}[4]{#1[#2{:}#3{:}#4]}
-\newcommand*{\partialMat}[7]{#1[#2{:}#3{:}#4, #5{:}#6{:}#7]}
-
-\newcounter{operation}
-\newcommand*{\TheOperationPrefix}{}
-\newcommand*{\OperationPrefix}[1]{%
-  \global\def\TheOperationPrefix{#1}%
-  #1 & & & & & \\}
-\newcommand*{\OperationDesc}[1]{\OperationDescNamed{#1}{#1}}
-\newcommand*{\OperationSugarDesc}[1]{\OperationDescNamed{#1}{#1*}}
-\newcommand*{\OperationDescNamed}[7]{%
-  \refstepcounter{operation}%
-  \label{operation:\TheOperationPrefix#1}%
-  \hspace{1em}#2 & #3 & #4 & #5 & #6 & #7\\}
-
-\newcommand*{\operationname}[2][]{\hyperref[operation:#1#2]{#2}}
-
-\newcommand*{\InPlace}{In-place}
-\SetKwComment{OperationComment}{$\triangleright$~}{}
-\makeatletter
-\def\OperationFormat@Quark{\OperationFormat@Quark}
-\newcommand*{\OperationFormat}[1]{%
-  \futurelet\@InPlace\OperationFormat@#1\OperationFormat@Quark}
-\def\OperationFormat@{%
-  \ifx\@InPlace\InPlace\relax\expandafter\@firstoftwo\else
-  \expandafter\@secondoftwo\fi
-  \OperationFormat@InPlace\OperationFormat@@}
-\def\OperationFormat@InPlace\InPlace{\relax\InPlace~\OperationFormat@@}
-\def\OperationFormat@@#1\OperationFormat@Quark{\operationname{#1}}
-\newcommand*{\Operation}{\tdk@comment\OperationComment\OperationFormat}
-\makeatother
-
-%
 % UML
 %
 
@@ -99,128 +60,4 @@
 \newcommand{\umlLollipop}[3][4em,2em]{
   \path (#2) edge ++(#1);
   \node at ($(#2)+(#1)$) [uml lollipop,label=0:{#3}] {};
-}
-
-%
-% Markov chains
-%
-
-\newcommand*{\CTMC}{\textls{CTMC}}
-\newcommand*{\TFF}{\mathabbrev{TFF}}
-\newcommand*{\MTFF}{\mathabbrev{MTFF}}
-
-%
-% Petri nets
-%
-
-\newcommand*{\PN}{\mathabbrev{PN}}
-\newcommand*{\SPN}{\mathabbrev{SPN}}
-\newcommand*{\PNI}{\PN_I}
-\newcommand*{\RS}{\mathabbrev{RS}}
-\newcommand*{\inarc}{\prescript{\bullet}{}}
-\newcommand*{\outarc}[1]{#1^\bullet}
-\newcommand*{\inharc}{\prescript{\circ}{}}
-\newcommand*{\outharc}[1]{#1^\circ}
-\newcommand*{\tranto}[1]{\mathbin{[#1\rangle}}
-\newcommand*{\reachto}{}\let\reachto\leadsto
-\newcommand*{\token}{\ensuremath{\bullet}}
-
-\tikzset{
-  petri net place/.style={
-    inner sep=0pt,minimum size=0.65cm,draw,circle,tdk highlight
-  },
-  petri net transition/.style={
-    inner sep=0pt,minimum width=0.2cm,minimum height=0.65cm,draw,tdk highlight
-  }
-}
-
-%
-% Stochastic Automata Networks
-%
-
-\newcommand*{\SAN}{\mathabbrev{SAN}}
-
-%
-% Stochastic Reward Nets
-%
-
-\newcommand*{\SRN}{\mathabbrev{SRN}}
-\newcommand*{\rateReward}{\mathit{rr}}
-\newcommand*{\impulseReward}{\mathit{ir}}
-
-%
-% Superposed Stochastic Petri Nets
-%
-
-\newcommand*{\SSPN}{\mathabbrev{SSPN}}
-\newcommand*{\partitions}{\mathscr{P}}
-\newcommand*{\loc}[2]{#1^{(#2)}}
-\newcommand*{\LN}{\loc{\mathabbrev{LN}}}
-\newcommand*{\LNI}{\loc{\mathabbrev{LN}_I}}
-\newcommand*{\PS}{\mathabbrev{PS}}
-\DeclareMathOperator{\supp}{supp}
-\newcommand*{\macro}{}\let\macro\tilde
-\newcommand*{\Macro}{}\let\Macro\widetilde
-
-%
-% CTL
-%
-
-\newcommand*{\CTL}{\textls{CTL}}
-\newcommand*{\KwTrue}{\textrm{true}}
-\newcommand*{\KwFalse}{\textrm{false}}
-\newcommand*{\ctlAX}{\textbf{\textsf{\textls[30]{AX}}}\,}
-
-%
-% MDD
-%
-
-\newcommand*{\MDD}{\mathabbrev{MDD}}
-\newcommand*{\mddLevel}{\textit{level}}
-\newcommand*{\mddChildren}{\textit{children}}
-\newcommand*{\ddnode}{}\let\ddnode\underline
-\newcommand*{\EDD}{\mathabbrev{EDD}}
-\newcommand*{\eddLabel}{\textit{label}}
-\newcommand*{\mddAbove}{\mathscr{A}}
-\newcommand*{\mddBelow}{\mathscr{B}}
-
-%
-% Running example
-%
-
-\newcommand*{\runningExamplePetriNet}{%
-\matrix [column sep=0.65cm,row sep=0.5cm,label distance=0cm,ampersand replacement=\&] {
-\node [petri net place,label={\strut$p_{W_1}$}] (W1) {};
-\& \node [petri net transition,label={\strut$t_{a_1}$}] (a1) {};
-\& \node [petri net place,label={\strut$p_{S_1}$}] (S1) {};
-\& \node [petri net transition,label={\strut$t_{d_1}$}] (d1) {};
-\& \node [petri net place,label={\strut$p_{C_1}$}] (C1) {\token};
-\& \node [petri net transition,label={\strut$t_{r_1}$}] (r1) {}; \\
-\& \& \node [petri net place] (S) {\token}; \& \& \& \\
-\node [petri net place,label={-90:\strut$p_{W_2}$}] (W2) {};
-\& \node [petri net transition,label={-90:\strut$t_{a_2}$}] (a2) {};
-\& \node [petri net place,label={-90:\strut$p_{S_2}$}] (S2) {};
-\& \node [petri net transition,label={-90:\strut$t_{d_2}$}] (d2) {};
-\& \node [petri net place,label={-90:\strut$p_{C_2}$}] (C2) {\token};
-\& \node [petri net transition,label={-90:\strut$t_{r_2}$}] (r2) {}; \\
-};
-\node [left=0cm of S] {$p_S$};
-\draw [-{Latex}] (W1) edge (a1) (S) edge (a1) (a1) edge (S1)
-(S1) edge (d1) (d1) edge (S) (d1) edge (C1) (C1) edge (r1)
-(W2) edge (a2) (S) edge (a2) (a2) edge (S2)
-(S2) edge (d2) (d2) edge (S) (d2) edge (C2) (C2) edge (r2);
-\draw [-{Latex},rounded corners] (r1.east) -| ++(0.65cm,1.2cm) -|
-($(W1.west)+(-0.65cm,0)$) -- (W1);
-\draw [-{Latex},rounded corners] (r2.east) -| ++(0.65cm,-1.2cm) -|
-($(W2.west)+(-0.65cm,0)$) -- (W2);
-}
-
-\newcommand*{\runningExampleSPN}{%
-\runningExamplePetriNet
-\node [below=2pt of a1] {$1.0$};
-\node [below=2pt of d1] {$0.5$};
-\node [below=2pt of r1] {$\frac{1}{\theta[0]} = 1.6$};
-\node [above=2pt of a2] {$1.0$};
-\node [above=2pt of d2] {$1.1$};
-\node [above=2pt of r2] {$\frac{1}{\theta[1]} = 0.8$};
 }
