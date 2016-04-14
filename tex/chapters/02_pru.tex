@@ -7,110 +7,67 @@ This chapter will discuss the capabilities, and usage of the Programmable Realti
 
 Even with realtime operating systems, no process can allocate hundred percent time of a CPU. There are essential OS management tasks, which handles the hardware. These management tasks needs to be executed periodically.
 \\[1ex]
-Other problems arise when the software specification requires communication protocols with precision frequency needs e.g. \isc, or \uart protocol. Where no \isc or \uart hardware is available, and the protocol is implemented in software. This software implementation is called \emph{bit--banging}, because the software is toggling the \gpio pins according to protocol specification.
+Communication protocols have various need. Two example are the Inter-Integrated Circuit (\isc), and the Universal Asynchronous Receiver Transmitter (\uart) protocol. Where no dedicated \isc or \uart hardware is available on a specific platform, the protocol is implemented in software. This software based protocol implementation is called \emph{bit--banging}, because the driver is toggling the \gpio pins according to protocol specification.
 
-Let's review with the \isc bit--banging example, and what is the problem with it.
+Let's review with the \uart bit--banging example, and what is the problem with it.
 
 \subsection{Example}
 
-Briefly about the \isc protocol:
-\begin{itemize}
-	\item Master--slave architecture, multiple slaves can attached to the same signal line.
-	\item Two signal line
-	\begin{itemize}
-		\item Clock (SDC)
-		\item Data (SDA)
-	\end{itemize}
-	\item Bus frequencies can be arbitrary
-\end{itemize}
-
-\noindent\begin{minipage}{\textwidth}
-	Briefly about the \uart protocol:
-	\begin{itemize}
-		\item P2P architecture
-		\item Two signal line
-		\begin{itemize}
-			\item Receive (RDX)
-			\item Transmission (TRX)
-		\end{itemize}
-		\item Bus frequency needs to be precise ($\le\approx\pm3\%$)
-	\end{itemize}
-\end{minipage}
-
-\begin{figure}
-\centering
-\resizebox{\textwidth}{!}{
+\begin{figure}[h]
+	\centering
 	\begin{tikzpicture}[
-		squarednode/.style={
-			rectangle,
-			draw=black,
-			very thick,
-			minimum size=2cm
-		},
-		connection/.style={
-			thick,
-			shorten >=2pt,
-			decoration={
-				markings,
-				mark={
-					at position 1
-					with {
-						\draw[radius=3pt,fill=black] circle;
-					}
-				}
+			squarednode/.style={
+				rectangle,
+				draw=black,
+				very thick,
+				minimum height=2cm,
+				minimum width=2.5cm
 			},
-			postaction=decorate
-		}
-	]
-		\node[squarednode] (master) {Master};
-		\node[squarednode] (slave1) [right = of master] {Slave$_1$};
-		\node[squarednode] (slave2) [right = of slave1] {Slave$_2$};
-		\node[squarednode] (slave3) [right = of slave2] {Slave$_3$};
+			label/.style={
+				font=\footnotesize
+			}
+		]
+		\node[squarednode] (A) [] {};
+		\node[squarednode] (B) [right = 3cm of A] {};
 
-		\draw[connection] (master.north) ++(-0.25,0) -- ++(0,1);
-		\draw[connection] (slave1.north) ++(-0.25,0) -- ++(0,1);
-		\draw[connection] (slave2.north) ++(-0.25,0) -- ++(0,1);
-		\draw[connection] (slave3.north) ++(-0.25,0) -- ++(0,1);
-
-		\draw[connection] (master.north) ++(0.25,0) -- ++(0,2);
-		\draw[connection] (slave1.north) ++(0.25,0) -- ++(0,2);
-		\draw[connection] (slave2.north) ++(0.25,0) -- ++(0,2);
-		\draw[connection] (slave3.north) ++(0.25,0) -- ++(0,2);
-
-		\draw[thick] (master.north) ++(-1,2) -- ++(13,0) node[pos=.95, above] {SDC};
-		\draw[thick] (master.north) ++(-1,1) -- ++(13,0) node[pos=.95, below] {SDA};
-	\end{tikzpicture}
-	}%
-	\caption{An example \isc configuration}
-	\label{fig:i2c_example}
-\end{figure}
-
-\begin{figure}
-\centering
-\resizebox{\textwidth}{!}{
-	\begin{tikzpicture}[
-		squarednode/.style={
-			rectangle,
-			draw=black,
-			very thick,
-			minimum height=2cm,
-			minimum width=2.5cm
-		},
-		label/.style={
-			font=\footnotesize
-		}
-	]
-		\node[squarednode] (A) [] {UART$_A$};
-		\node[squarednode] (B) [right = 3cm of A] {UART$_B$};
+		\node (A_label) [right = 2mm of A.west] {UART$_1$};
+		\node (B_label) [left = 2mm of B.east] {UART$_2$};
 
 		\draw[thick,->] (A.east) ++(0,0.5) -- ++(3,0) node[label,pos=-0.15] {TX} node[label,pos=1.15] {RX};
-		\draw[thick,->] (B.west) ++(0,-0.5) -- ++(-3,0) node[label,pos=-0.15] {TX} node[label,pos=1.15] { RX};
+		\draw[thick,->] (B.west) ++(0,-0.5) -- ++(-3,0) node[label,pos=-0.15] {TX} node[label,pos=1.15] {RX};
 	\end{tikzpicture}
-	}%
-	\caption{An example \uart configuration}
+	\caption{A common \uart configuration}
 	\label{fig:example_uart}
 \end{figure}
 
-\vspace{2.5ex}
+In this example, the \uart bit--banging solution will be presented. The \uart is an asynchronous protocol, meaning it does not have a common clock signal (\cref{fig:example_uart}). In an asynchronous protocol, the two side (UART$_1$, and UART$_2$) have an internal clock. Baud is the number of symbols\,---in \uart, bits---\, can be sent in a second, and the internal clock is set to sample this rate correctly. Some de--facto baud rates used in the industry are for example: $9600, 19200, 38400, 57600, 115200$
 
-The master is responsibile to generate the clock signal, which both sides will be using to send data. This is a good example to depict the weakness of realtime operating systems, because we need a precise clock under the transmission.
+One perfectly sampled \uart communication is showed in \cref{fig:uart_correct}. The communication starts with the sender pulling down the signal line down. This marks the start of transmission. The other side senses the falling edge, and preparing for the transmission. After the start signal, the sender will send the data with the pre defined baud rate. The receiver side is sampling the data when the transmitter side is between the transitions.
+
+\newcounter{countup}
+\setcounter{countup}{-1}
+\newcommand*{\countup}{\addtocounter{countup}{1}\thecountup}
+
+\begin{figure}[h]
+	\centering
+	\setcounter{countup}{-1}
+	\begin{tikztimingtable}[yscale=2.0,timing/wscale=1.5]
+		Signal								& 2H 2L 8{2D{D\countup}} 2H 2H \\
+		Sample								& 2L {.2L .3H 1.5L} 9{.8L .4H .8L} 2L \\
+	\end{tikztimingtable}
+	\caption{Timing of a correct \uart communication}
+	\label{fig:uart_correct}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\setcounter{countup}{-1}
+	\begin{tikztimingtable}[yscale=2.0,timing/wscale=1.5]
+		Signal								& 2H 2L 2.4D{D\countup} 2.8D{D\countup} 1.8D{D\countup} 2.25D{D\countup} 2D{D\countup} 1.75D{D\countup} 1.86D{D\countup} 2.1D{D\countup} 2H 2H \\
+		Sample								& 2L {.2L .3H 1.5L} 9{.8L .4H .8L} 2L \\
+	\end{tikztimingtable}
+	\caption{Timing of an incorrect \uart communication}
+	\label{fig:uart_incorrect}
+\end{figure}
+
+One weak point of the \uart communication is the need of precise, synchronized timing on both sides. This is caused by the lack of the clock signal between the two transceivers.\footnote{This problem is solved by the Universal Serial Receiver Transmitter (\usrt), but it needs another signal line, so other more capable protocols like Serial Peripherial Interface (\spi), or \isc replaced the \usrt.} \cref{fig:uart_incorrect} shows an incorrect timing on the sender side. Every error in the transmission is accumulated, and false sampling can happen. In our example, \emph{D1} data bit is sampled twice, and we completely miss the stop sign.
