@@ -15,6 +15,11 @@
 \RequirePackage{csquotes}
 
 %
+% Units
+%
+\RequirePackage[binary-units=true]{siunitx}
+
+%
 % Typography
 %
 
@@ -271,6 +276,7 @@
 \RequirePackage{tikz}
 \usetikzlibrary{arrows.meta,calc,chains,decorations.pathreplacing,decorations.markings,shadows,shapes.multipart,matrix,positioning,trees}
 \RequirePackage{tikz-timing}
+\tikzset{>=latex}
 
 % Create a bg layer for drawings
 \pgfdeclarelayer{bg}

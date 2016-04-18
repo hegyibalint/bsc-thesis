@@ -3,6 +3,42 @@
 
 Nowadays, the complexity of software systems is increasing. As we develop more and more functionality in safety oriented solutions, we can reach a complexity level, where formal verification isn't enough on it's own to assure a specified behavior. With the introduction of Internet of Things (\iot), and new mobile communication technologies, systems are becoming dynamic, and this transition needs new embedded monitoring solutions.
 
+\section{Model driven software developement}
+
+Using models to design complex systems is essential in traditional engineering disciplines. Models help us understand a complex problem and its potential solutions through abstraction. Therefore, it seems obvious that software systems, which are often among the most complex engineering systems, can benefit greatly from using models and modeling techniques. \citep{pastor2008model}
+
+In safety--critical systems, model driven software development is mandatory. In these systems, e.g. requirement traceability is necessity. Without a model based software design process, the traceability of requirements and the development process of the components are hard to follow. In a traditional software development process, these documents would have been written by natural language on paper, or some electronically document format. Finding tracing information between documents in a complex system is almost impossible.
+
+Model based software developement consists two main components:
+\begin{itemize}
+	\item Tools: Tools allow the developers to create models, e.g. UML, EMF, SysML
+	\item Process: The process describes how to use tools in a development process, e.g. SYSMOD, RUP, Y model
+\end{itemize}
+
+\section{Verification techniques}
+
+\subsection{Design time verification}
+
+Design time verification, or formal verification is the analysis of a software in the design process. It's mostly based around model driven system development, where we specify the entire software\,---and hardware if needed---\,as a model. On this model, we can run analysis to ensure that software always behaves according to the specification. Formal verification is a commonly used process in the verification of safety critical systems, or networking protocols.
+
+As mentioned, dynamic behavior takes significant part of a modern software system, even in a safety critical cases. As the availability of sensor networks and advanced communication technologies spreads, distributed components pose a challenge in the verification process.
+
+While formally verifying a software, the software engineer builds a model, and tests this model against given scenarios, searching for incorrect behavior. But the engineer is the responsible for the specification of the scenarios, and not all corner cases are obvious. This method can lead situations, where the system may hide a potential hazard, but because no verification indicated incorrect behavior, we find the system verified.
+
+\subsection{Runtime verification}
+
+On behalf of design time verification which is performed while developing the software components, runtime verification checks the systems behavior while operating. This is beneficial because if an erroneous state in the software is not found at the formal verification stage of development, runtime verification techniques can still detect the faulty state of the software, and raise an error. This error can be detected by other components, and\,---if possible\,---resolve this error.
+
+Runtime verification components can be implemented in form of monitors. The monitors' responsibility is to take signals from a software, and compare it to a simplified model inside of the monitor.
+
+Software components can communicate with the monitor via multiple ways. The communication method implies where the monitor is placed.
+\begin{enumerate}
+	\item Directly by calling the monitors' methods. In this case the monitors' methods are called from the monitored process itself. The monitor is placed in the same compilation unit.
+	\item\label{item:agent} Remotely by an agent. An embedded agent component is called from the monitored components, or the agent is actively extracting the monitored softwares' state. The agent then forwards this information to the monitor. The monitor can be virtually everywhere.
+\end{enumerate}
+
+... (Itt kellene arról beszélni, hogy mi lesz a case study-ban)
+
 \section{Complex Event Processing}
 
 Complex event processing (\cep) is a set of techniques and tools to help us understand and control event-driven information systems.\citep{Luckham:2001:PEI:515781}
@@ -38,30 +74,6 @@ With this functionality, one can build hierarchical system of rules. Instead of 
 \subsection{Conclusion}
 
 Traditionally complex event processors are complex frameworks like databases, and modeling frameworks. The aim of this thesis to generate small, but effective code, and run it on embedded environments, where it's impossible to run a full \cep software stack.
-
-\section{Verification techniques}
-
-\subsection{Design time verification}
-
-Design time verification, or formal verification is the analysis of a software in the design process. It's mostly based around model driven system development, where we specify the entire software\,---and hardware if needed---\,as a model. On this model, we can run analysis to ensure that software always behaves according to the specification. Formal verification is a commonly used process in the verification of safety critical systems, or networking protocols.
-
-As mentioned, dynamic behavior takes significant part of a modern software system, even in a safety critical cases. As the availability of sensor networks and advanced communication technologies spreads, distributed components pose a challenge in the verification process.
-
-While formally verifying a software, the software engineer builds a model, and tests this model against given scenarios, searching for incorrect behavior. But the engineer is the responsible for the specification of the scenarios, and not all corner cases are obvious. This method can lead situations, where the system may hide a potential hazard, but because no verification indicated incorrect behavior, we find the system verified.
-
-\subsection{Runtime verification}
-
-On behalf of design time verification which is performed while developing the software components, runtime verification checks the systems behavior while operating. This is beneficial because if an erroneous state in the software is not found at the formal verification stage of development, runtime verification techniques can still detect the faulty state of the software, and raise an error. This error can be detected by other components, and\,---if possible\,---resolve this error.
-
-Runtime verification components can be implemented in form of monitors. The monitors' responsibility is to take signals from a software, and compare it to a simplified model inside of the monitor.
-
-Software components can communicate with the monitor via multiple ways. The communication method implies where the monitor is placed.
-\begin{enumerate}
-	\item Directly by calling the monitors' methods. In this case the monitors' methods are called from the monitored process itself. The monitor is placed in the same compilation unit.
-	\item\label{item:agent} Remotely by an agent. An embedded agent component is called from the monitored components, or the agent is actively extracting the monitored softwares' state. The agent then forwards this information to the monitor. The monitor can be virtually everywhere.
-\end{enumerate}
-
-... (Itt kellene arról beszélni, hogy mi lesz a case study-ban)
 
 \section{Realtime Operating System}
 
