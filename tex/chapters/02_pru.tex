@@ -3,9 +3,9 @@
 
 This chapter will discuss the capabilities, and usage of the Programmable Realtime Unit (\textls{PRU}).
 
-Even with realtime operating systems, no process can allocate hundred percent time of a CPU. There are essential OS management tasks, which handles the hardware. These management tasks needs to be executed periodically.
+Even with realtime operating systems, no process can allocate hundred percent time of a CPU. There are essential OS management tasks, which handles the hardware. These management tasks need to be executed periodically.
 
-\subsection{Example}
+\section{Example}
 \label{subsec:example}
 
 This example illustrates the usability of an external control unit, if the system has rigorous timing criteria.
@@ -151,16 +151,23 @@ The AM335x is the Texas Intruments' ARM Cortex-A8 processor family \citep{AM335x
 The AM335x processor family have four member (AM3359, AM3358, AM3357, AM3356) which have special unit called \emph{Programmable Realtime Unit and Industrial Communication SubSystem} (\pruss). A \pruss consists two \emph{Programmable Realtime Unit} (\pru). These units are Hardware architecture based microcontrollers which can be programmed by an application running on the central processing unit.
 
 \needspace{10\baselineskip}
-The basic properties of the AM335x (\pruss) (be warned, there are previous generations of \pruss, generations do not always indicated):
+The basic properties of the AM335x \pruss (be warned, there are previous generations of \pruss, generations do not always indicated):
 \begin{itemize}
 	\item 2 \pru processor per \pruss:
-		\begin{itemize}
-			\item \SI{200}{\mega\hertz} clock speed, all instruction is \SI{5}{\nano\second}
-			\item \SI{8}{\kilo\byte} instruction memory
-			\item \SI{8}{\kilo\byte} data memory
-			\item \SI{12}{\kilo\byte} shared memory between the two processor
-			\item Access to the system peripherals, e.g.: DRAM, GPIO
-		\end{itemize}
+	\begin{itemize}
+		\item \SI{32}{\bit} Harward architecture, without pipelining
+		\item \SI{200}{\mega\hertz} clock speed, all instruction is \SI{5}{\nano\second}
+		\item \SI{8}{\kilo\byte} instruction memory
+		\item \SI{8}{\kilo\byte} data memory
+		\item \SI{12}{\kilo\byte} shared memory between the two processor
+		\item Up to 30 input, and 32 output
+	\end{itemize}
+	\item An interrupt controller shared between the units
+	\item Access to the system peripherals, e.g.: DRAM, GPIO
+	\begin{itemize}
+		\item System DRAM access is possible, but indeterministic
+		\item GPIO handling is direct, meaning I/O can be handler with \SI{5}{\nano\second} resolution.\footnote{The sustainable maximal frequency achievable is \SI{50}{\mega\hertz}, because the toggle loop takes 4 instructions to execute.}
+	\end{itemize}
 \end{itemize}
 
 \begin{figure}[h]
@@ -232,6 +239,26 @@ The basic properties of the AM335x (\pruss) (be warned, there are previous gener
 		\node[squarednode,pru] (PRU1) at (4, 3.65) {PRU1};
 
 	\end{tikzpicture}
-	\caption{Integrated coprocessor}
-	\label{fig:int_controller_hw}
+	\caption{Block diagram of the \pruss}
+	\label{fig:pruss_block}
 \end{figure}
+
+ Because of this approach, every instruction takes \SI{5}{\nano\second}, and there is no pipelining, or out-of-order execution.
+
+\subsection{Determinism of the \pru}
+
+Texas Instruments' main goal with this coprocessor was to maximize the determinism of the processor, and the code running on it. This approach utilizes some unique design decisions.
+
+\subsubsection{Execution}
+
+On the \pru, every instruction takes \SI{5}{\nano\second} to execute. This is an interesting design pattern, because on most architecture the execution cycle varies with instructions e.g. the \emph{JUMP} instruction always need more execution cycle than a simple addition. The \pru aarchitecture is uniformial. This uniformity helps the static analysis of code, because there are no corner cases in the cycle counts.
+
+There is no pipelining, and out-of-order execution, so the processor execute the machine code in the exact same order it was compiled.
+
+\subsubsection{Interrupt handling}
+
+There is no interrupt vector though the \pruss have an interrupt controller. The handling of interrupts is not hardware based like in other microcontrollers like the Microchip's PIC or the Atmel's AVR microcontrollers.
+
+The default approach in interrupt handling is to interrupt the normal code execution, save the state of the normal execution (current program counter, and register values), and jump to an interrupt service routine (\textls{ISR}). After the ISR returns, the normal execution is restored, and continued.
+
+On the \pru, there is no hardware based approach, the executed code must poll a specific register containing the flag bits of interrupt signals. By this way, the determinism of interrupt handling (despite the name \emph{interrupt} implies the interruption of normal execution flow) is fully handled by the executed code thus giving full control when these signals are processed.
