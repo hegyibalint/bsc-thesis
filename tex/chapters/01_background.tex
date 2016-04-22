@@ -15,6 +15,62 @@ Model based software development consists two main components:
 	\item Process: The process describes how to use tools in a development process, e.g. SYSMOD, RUP, Y model
 \end{itemize}
 
+\begin{figure}[!h]
+	\centering
+	\begin{tikzpicture}[
+			start chain=going below,
+			squarednode/.style={
+				rectangle,
+				draw=black,
+				very thick,
+				minimum height=1.5cm,
+				text width=2.5cm,
+				inner sep=2mm,
+				align=center
+			},
+			every loop/.style={
+				looseness=2,
+				text width=2cm
+			}
+		]
+		\node[squarednode] (D1) {System\\Design Model};
+		\node[squarednode] (D2) [below = of D1, xshift = .5cm] {Architecture\\Design Model};
+		\node[squarednode] (D3) [below = of D2, xshift = .5cm] {Component\\Design Model};
+		\node[squarednode] (V1) [right = 3cm of D1] {System\\V\&V Model};
+		\node[squarednode] (V2) [below = of V1, xshift = -.5cm]{Architecture\\V\&V Model};
+		\node[squarednode] (V3) [below = of V2, xshift = -.5cm] {Component\\V\&V Model};
+
+		\node[squarednode] (GC) at ($(D3)!0.5!(V3)$) [yshift=-3.5cm, text width=5.5cm] {Design + V\&V Artifacts\\(Source code, Glue code,\\Config. Tables, Test Cases,\\Monitors, Fault Trees, etc.)};
+
+		\draw[thick,->] (D3.south) -- (GC.north -| D3) node [midway, left, align=right] {Code generation};
+		\draw[thick,->] (V3.south) -- (GC.north -| V3) node [midway, right, align=left] {Test generation};
+
+		\draw[thick,->] (D1) edge [loop left, align=right] node {Design rules} ();
+		\draw[thick,->] (D2) edge [loop left, align=right] node {Design rules} ();
+		\draw[thick,->] (D3) edge [loop left, align=right] node {Design rules} ();
+
+		\draw[thick,->] (V1) edge [loop right, align=left] node {Formal methods} ();
+		\draw[thick,->] (V2) edge [loop right, align=left] node {Formal methods} ();
+		\draw[thick,->] (V3) edge [loop right, align=left] node {Formal methods} ();
+
+		\draw[thick,->] (D1.south) -- (D2.north) node [midway, left, align=right] {Refine};
+		\draw[thick,->] (D2.south) -- (D3.north) node [midway, left, align=right] {Refine};
+		\draw[thick,<-] (V1.south) -- (V2.north) node [midway, right, align=left] {Use};
+		\draw[thick,<-] (V2.south) -- (V3.north) node [midway, right, align=left] {Use};
+
+		\draw[thick,<->] (D1.east) -- (V1.west);
+		\draw[thick,<->] (D2.east) -- (V2.west);
+		\draw[thick,<->] (D3.east) -- (V3.west);
+
+	\end{tikzpicture}
+	\caption{Diagram of the Y model}
+	\label{fig:y_model}
+\end{figure}
+
+\subsection{Y model}
+
+The Y model (\cref{fig:y_model}) depicts a basic workflow of model based software development. Every design level has it's own design rules it must conform to. The detailed levels of the system must be traceable to the upper levels. The artifact of the design process is the generated code, and generated test cases.
+
 \section{Verification techniques}
 
 \subsection{Design time verification}
@@ -39,7 +95,7 @@ Software components can communicate with the monitor via multiple ways. The comm
 
 ... (Itt kellene arról beszélni, hogy mi lesz a case study-ban)
 
-\section{Complex Event Processing}
+\section{Complex event processing}
 
 Complex event processing (\cep) is a set of techniques and tools to help us understand and control event-driven information systems.\citep{Luckham:2001:PEI:515781}
 
@@ -151,7 +207,7 @@ A \cep is built around it's execution engine. The engine accepts the input strea
 
 Traditionally complex event processors are complex frameworks like databases, and modeling frameworks. The aim of this thesis to generate small, but effective code, and run it on embedded environments, where it's impossible to run a full \cep software stack.
 
-\section{Real--time Systems}
+\section{Real--time systems}
 
 Real--time systems have some temporal constraints (deadline), which the system must satisfy. In a real--time system the correctness of behavior not only depend on the control logic, but on the temporal properties of it. These constrains often focused on the response time of the system in case of events.
 
@@ -165,7 +221,7 @@ Hard realtime systems have precisely defined deadlines which the system must suf
 
 Soft real--time differ from hard--realtime system in the way they stay correct if they miss the deadline, but operation between time constraints needed for normal functionality. One example is the processing of mouse input. If the processing of mouse input lags, it can be annoying for the user. Nonetheless the functionality stays intact, but the usability seriously degrades.
 
-\subsection{Realtime Operating Systems}
+\subsection{Realtime operating systems}
 
 The type of an operating system is defined by how the scheduler decides which program to run and when. For example, the scheduler used in a multi user operating system (such as Unix) will ensure each user gets a fair amount of the processing time. As another example, the scheduler in a desktop operating system (such as Windows) will try and ensure the computer remains responsive to its user.
 
@@ -173,7 +229,7 @@ The scheduler in a \emph{Real Time Operating System} (\rtos) is designed to prov
 
 Most of the safety oriented systems based around realtime operating systems. It is important to understand realtime operating systems exists to provide determinism, and not additional performance. With these response guarantees, the software engineer can be sure the incoming interrupt will be served, and the software components responsible for the processing will get \cpu time between the guaranteed limits.
 
-\section{Mission Critical Systems}
+\section{Mission critical systems}
 
 A mission critical system is which failure can cause severe financial loss, natural disaster, or loss of human lives. Most of the time mission critical systems utilizes hard--realtime systems. Association between mission critical systems, and hard--realtime is common, but there are counterexamples:
 

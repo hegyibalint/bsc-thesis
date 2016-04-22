@@ -1,4 +1,4 @@
-\chapter{Programmable Realtime Unit}
+\chapter{Programmable realtime unit}
 \label{chap:pru}
 
 This chapter will discuss the capabilities, and usage of the Programmable Realtime Unit (\textls{PRU}).
@@ -85,9 +85,13 @@ The only job of the microcontroller is to generate the corresponding controlling
 
 On the downside, the design have an extra external component which is an overhead in the design and programming process. The optimal solution would be to merge the two processors into one.
 
-\section{Programmable Realtime Unit}
+\section{Programmable realtime unit}
 
-Instead of having an external component (\cref{fig:ext_controller_hw}), this external coprocessor could be integrated into the integrated circuit of the central processing unit (\cref{fig:int_controller_hw}). This can be beneficial because we need less external components, and because of the integrated property of this solution, the communication with the coprocessor is reliable. Additionally the coprocessor can use some of the resources of the host \cpu which would be hardly accessed in an external configuration.
+Instead of having an external component (\cref{fig:ext_controller_hw}), this external coprocessor could be integrated into the integrated circuit of the central processing unit (\cref{fig:int_controller_hw}).
+
+This can be beneficial because we need less external components, and because of the integrated property of this solution, the communication with the coprocessor is reliable.
+
+Additionally the coprocessor can use some of the resources of the host \cpu which would be hardly accessed in an external configuration.
 
 \begin{figure}[h]
 	\centering
@@ -144,11 +148,13 @@ Instead of having an external component (\cref{fig:ext_controller_hw}), this ext
 	\label{fig:int_controller_hw}
 \end{figure}
 
-\subsection{AM335x Processor}
+\subsection{AM335x processor family}
 
 The AM335x is the Texas Intruments' ARM Cortex-A8 processor family \citep{AM335x}. Our focus will be the AM3358 processor, because the BeagleBone Black \citep{BBB} utilizes this \cpu. The BeagleBone Black is the reference system this thesis will use.
 
 The AM335x processor family have four member (AM3359, AM3358, AM3357, AM3356) which have special unit called \emph{Programmable Realtime Unit and Industrial Communication SubSystem} (\pruss). A \pruss consists two \emph{Programmable Realtime Unit} (\pru). These units are Hardware architecture based microcontrollers which can be programmed by an application running on the central processing unit.
+
+The \pru is not an accelerator next to the media processor, it's sole purpose is to offload hard real--time software components into these units. In this way, the designer may avoid the usage of a real--time operating system, which can be a big tradeoff in performance, capabilities, design and license costs.
 
 \needspace{10\baselineskip}
 The basic properties of the AM335x \pruss (be warned, there are previous generations of \pruss, generations do not always indicated):
@@ -156,13 +162,13 @@ The basic properties of the AM335x \pruss (be warned, there are previous generat
 	\item 2 \pru processor per \pruss:
 	\begin{itemize}
 		\item \SI{32}{\bit} Harward architecture, without pipelining
-		\item \SI{200}{\mega\hertz} clock speed, all instruction is \SI{5}{\nano\second}
+		\item \SI{200}{\mega\hertz} clock speed, all instruction executed in \SI{5}{\nano\second}
 		\item \SI{8}{\kilo\byte} instruction memory
 		\item \SI{8}{\kilo\byte} data memory
 		\item \SI{12}{\kilo\byte} shared memory between the two processor
-		\item Up to 30 input, and 32 output
+		\item Up to 17 input, and 16 output
 	\end{itemize}
-	\item An interrupt controller shared between the units
+	\item An interrupt controller shared between the \pru cores
 	\item Access to the system peripherals, e.g.: DRAM, GPIO
 	\begin{itemize}
 		\item System DRAM access is possible, but indeterministic
@@ -243,8 +249,6 @@ The basic properties of the AM335x \pruss (be warned, there are previous generat
 	\label{fig:pruss_block}
 \end{figure}
 
- Because of this approach, every instruction takes \SI{5}{\nano\second}, and there is no pipelining, or out-of-order execution.
-
 \subsection{Determinism of the \pru}
 
 Texas Instruments' main goal with this coprocessor was to maximize the determinism of the processor, and the code running on it. This approach utilizes some unique design decisions.
@@ -262,3 +266,61 @@ There is no interrupt vector though the \pruss have an interrupt controller. The
 The default approach in interrupt handling is to interrupt the normal code execution, save the state of the normal execution (current program counter, and register values), and jump to an interrupt service routine (\textls{ISR}). After the ISR returns, the normal execution is restored, and continued.
 
 On the \pru, there is no hardware based approach, the executed code must poll a specific register containing the flag bits of interrupt signals. By this way, the determinism of interrupt handling (despite the name \emph{interrupt} implies the interruption of normal execution flow) is fully handled by the executed code thus giving full control when these signals are processed.
+
+\section{Firmware loader}
+
+Because the \pru have it's own instruction and data memory, a driver is needed to load the compiled code inside it. This firmware loader is different in linux kernel 3.x and 4.x. The thesis will use the 4.x kernel version loader driver.
+
+\subsection{Linux kernel v3.x}
+
+In linux kernel v3.x, the firmware, and resource initialization is entirely the responsibility of the programmer. An userspace application using the \emph{prussdrv} \citep{PRU_PRUSSDRV} framework can load the compiled program into the instruction memory of the \pru, and handle various resources e.g. memory mapping or interrupt signals.
+
+\subsection{Linux kernel v4.x}
+
+From linux kernel 3.x to 4.x the entire framework structure changed. While 3.x version was completely custom, \ti developers moved forward to more standard linux framework like \emph{remoteproc} \citep{RPROC}. While remoteproc is harder to understand, it is a well documented framework itself.
+
+The biggest change from kernel 3.x is the move to kernel module level. The kernel module is called \emph{pruss-remoteproc}, and is responsible of loading the kernel bundled into an \elf file inside the memory of the \pru. Because the loading is placed into kernelspace, and the module which loads it is uniform and not written by the programmer, some configuration method is needed. This method is described in the \cref{subs:linking}
+
+\section{Toolchain}
+
+Because it's custom environment, the compiler toolchain utilizes some specific approaches. This section will describe the biggest differences from an everyday used \verb/g++/ or \verb/clang/ compilation workflow.
+
+\subsection{Compiling}
+
+Compilation to the \pru cores can be either be done by:
+\begin{itemize}
+	\item Assembly \citep{PRU_ASM}. Because the PRU is a RISC architecture, the number of instructions are rather limited supporting easy programming by assembly language \citep{PRU_ASM_INSTR}. The compiler for assembly files is \verb+pasm+.
+	\item \cpl{} or \cpp{} language \citep{PRU_C_CPP}. The compiler for assembly files is \verb+clpru+. The compiler supports \cpl{99} and \cpp{03} versions of the languages. This compiler is specifically designed to compile to \pru.
+\end{itemize}
+This thesis will use the \verb+clpru+ compiler, because the generated code is based on the \cpp{98} version.
+
+\subsection{Linking}
+\label{subs:linking}
+
+The additional complexity compared to a simple \verb/g++/ or \verb/clang/ compilation is the linking process.
+
+There are multiple versions of \pru hardware, and the generated image must map correctly to the memory sections of the \pru. Additionally the firmware loader requires a specific header file called \emph{resource\_table}. This resource table contains the required system resources the \pru uses, therefore the firmware loader can initialize these resources.
+
+These memory regions defined in a \verb+.cmd+ file, and necessary to compile an \elf image for the firmware loader.
+
+\subsection{Support library}
+
+To utilize the advanced communication between the host processor, and the \pru, specific frameworks needs to be used. These frameworks are not included in the \pru \cpp{} toolchain itself, but in the \emph{pru-software-support-package}\citep{TI_PRUSS_REPO}. This package contains the implementation of these supporting firmwares.
+
+\subsubsection{Makefile}
+
+The compilation workflow is aided by the \verb+make+ utility.
+
+The \verb+make+\footnote{More information about make: \url{https://www.gnu.org/software/make/}} application is the most popular build tool in the open source community. It uses specific files called \emph{Makefile}. These files declaratively states the dependencies of each step of compilation. The advantages of using make is to:
+\begin{itemize}
+	\item Simplify a complex workflow, just by calling \verb+make+.
+	\item The \verb+make+ utility can determine which dependency is required to compile the application. If the project e.g. a kernel source consists of numerous object files, one small change just trigger the recompilation of the source file, and not the complete project itself.
+\end{itemize}
+
+A prepared Makefile recommended for \pru code compilation can be found in the repository \citep{TI_PRUSS_REPO}. The thesis uses the slightly modified version of  file \url{examples/am335x/PRU_gpioToggle/Makefile} to generate the artifacts. The modifications were
+\begin{itemize}
+	\item Set the mandatory \verb+PRU_CGT+ variable. This variable store the path where the toolchain binaries can be found.
+	\item Define a new variable \verb+SUPPORT_PATH+. The directory structure of the repository contained the support file, therefore the Makefile accessed these files with relative paths. To increase the reusability of the makefile, the \verb+SUPPORT_PATH+ stores the absolute path to the support library.
+	\item Changing the \verb+LIBS+ variable to the correct directory.
+	\item Changing the \verb+INCLUDE+ variable to the correct directory. To be noted, the original Makefile does not have an include directory for the project itself, because the examples are written in a single files, thus no header files were needed.
+\end{itemize}
