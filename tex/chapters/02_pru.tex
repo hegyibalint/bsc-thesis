@@ -305,7 +305,7 @@ These memory regions defined in a \verb+.cmd+ file, and necessary to compile an 
 
 \subsection{Support library}
 
-To utilize the advanced communication between the host processor, and the \pru, specific frameworks needs to be used. These frameworks are not included in the \pru \cpp{} toolchain itself, but in the \emph{pru-software-support-package}\citep{TI_PRUSS_REPO}. This package contains the implementation of these supporting firmwares.
+To utilize the advanced communication between the host processor, and the \pru, specific frameworks needs to be used. These frameworks are not included in the \pru \cpp{} toolchain itself, but supported in the \emph{pru-software-support-package} \citep{TI_PRUSS_REPO}. This package contains the implementation of these  frameworks.
 
 \subsubsection{Makefile}
 
@@ -321,6 +321,36 @@ A prepared Makefile recommended for \pru code compilation can be found in the re
 \begin{itemize}
 	\item Set the mandatory \verb+PRU_CGT+ variable. This variable store the path where the toolchain binaries can be found.
 	\item Define a new variable \verb+SUPPORT_PATH+. The directory structure of the repository contained the support file, therefore the Makefile accessed these files with relative paths. To increase the reusability of the makefile, the \verb+SUPPORT_PATH+ stores the absolute path to the support library.
-	\item Changing the \verb+LIBS+ variable to the correct directory.
+	\item Changing the \verb+LIBS+ variable to the correct directory. The original version used a relative path to the library, this change modified this by adding a local \verb+lib+ folder, and copying all the necessary \verb+.lib+ file to this directory.
 	\item Changing the \verb+INCLUDE+ variable to the correct directory. To be noted, the original Makefile does not have an include directory for the project itself, because the examples are written in a single files, thus no header files were needed.
 \end{itemize}
+
+\begin{figure}[!h]
+	\centering
+	\begin{tikzpicture}[
+		grow via three points={one child at (0.5,-0.7) and two children at (0.5,-0.7) and (0.5,-1.4)},
+		edge from parent path={[thick] (\tikzparentnode.south) |- (\tikzchildnode.west)},
+		every node/.style = {
+			anchor=west
+		}
+	]
+
+	\node {«\,project root\,»}
+		child { node {\Verb+Makefile+}}
+		child { node {\Verb+AM335x\_PRU.cmd+}}
+		child { node {\Verb+include+}
+			child { node {«\,header files (*.hpp)\,»}}
+		}
+		child [missing] {}
+		child { node {\Verb+src+}
+			child { node {«\,source files (*.cpp)\,»}}
+		}
+		child [missing] {}
+		child { node {\Verb+gen+}
+			child { node {«\,compiled files (*.object, *.pp, *.map)\,»}}
+		};
+
+	\end{tikzpicture}
+	\caption{The directory structure of a typical \pru application}
+	\label{fig:y_model}
+\end{figure}

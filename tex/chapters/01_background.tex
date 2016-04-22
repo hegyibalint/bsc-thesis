@@ -3,6 +3,16 @@
 
 Nowadays, the complexity of software systems is increasing. As we develop more and more functionality in safety oriented solutions, we can reach a complexity level, where formal verification isn't enough on it's own to assure a specified behavior. With the introduction of Internet of Things (\iot), and new mobile communication technologies, systems are becoming dynamic, and this transition needs new embedded monitoring solutions.
 
+\section{Embedded systems}
+
+Embedded systems are units with dedicated functionality. Often embedded systems consists of more specialized units, which are interconnected by some network e.g. the \textls{CAN} bus in an automobile. A typical car can have microcontrollers from a dozen to ten dozens \citep{VEHICLE_DYN}.
+
+Most of todays' microprocessors can be found in embedded electronics. Embedded systems considered more restricted compared to personal computers. Memory and computation power is limited, and most of the cases these systems needs to be real--time.
+
+Embedded systems often utilized in time critical solutions, where is simpler to delegate tasks to different processors compared to a shared, more powerful computer.
+
+With the rising of \emph{Single Board Computers} (\textls{SBC}) like Raspberry Pi, BeagleBone, ODROID, anybody can easily access embeddable hardware platforms. With the trending of IoT technologies e.g. sensor networks, manufacturers are moving towards more open sourced, accessible platforms which everybody can use.
+
 \section{Model driven software developement}
 
 Using models to design complex systems is essential in traditional engineering disciplines. Models help us understand a complex problem and its potential solutions through abstraction. Therefore, it seems obvious that software systems, which are often among the most complex engineering systems, can benefit greatly from using models and modeling techniques. \citep{pastor2008model}
@@ -97,7 +107,7 @@ Software components can communicate with the monitor via multiple ways. The comm
 
 \section{Complex event processing}
 
-Complex event processing (\cep) is a set of techniques and tools to help us understand and control event-driven information systems.\citep{Luckham:2001:PEI:515781}
+Complex event processing (\cep) is a set of techniques and tools to help us understand and control event-driven information systems \citep{Luckham:2001:PEI:515781}.
 
 Complex event processing frameworks exists because of the problem of processing large amount of events coming inside into an application. While its easy to search  very simple patterns inside an incoming on--line stream of information, e.g. the same thing happening $x$ times after each other, at the moment the developer wants to find more complex, maybe temporal pattern in this incoming information, this problems grows into a nontrivial one.
 
@@ -108,9 +118,11 @@ For example take an example from the financial world. A bank wants to avoid frau
 	\item Used somewhere outside from the country the last 2 payments was done
 \end{itemize}
 
-With the capability to find such specific occasions, complex event processor is great for monitoring purposes. This thesis will show the usage of this monitoring capability with very limited resources. The basic workflow for monitoring with \cep is illustrated in \cref{fig:cep_monitoring}
+With the capability to find such specific occasions, complex event processor is great for monitoring purposes. This thesis will show the usage of this monitoring capability with very limited resources.
 
-\begin{figure}[!h]
+The basic workflow for monitoring with \cep is illustrated in \cref{fig:cep_monitoring}. If the developement is model based, according to the Y-model, from the high level specification one can generate complex event processor patterns (\cref{subsec:cep_patterns}). After compilation, or interpretation of the patterns, the monitor can be executed by a \cep engine (\cref{subsec:cep_engine}). The generated monitor is then capable of signaling the violation of the high level specification.
+
+\begin{figure}
 	\centering
 	\begin{tikzpicture}[
 			start chain=going below,
@@ -139,6 +151,7 @@ With the capability to find such specific occasions, complex event processor is 
 \end{figure}
 
 \subsection{Event}
+\label{subsec:cep_event}
 
 An event is an instance of an event type, which is distinguished by an unique name.
 Event is the basic and most important aspect of a complex event processor. Events can be classified into two main categories:
@@ -149,6 +162,7 @@ Event is the basic and most important aspect of a complex event processor. Event
 
 \needspace{10em}
 \subsection{Event streams}
+\label{subsec:cep_eventstream}
 \label{subsection:event_streams}
 The input of a \cep are streams of atomic events. These atomic events can come from various sources, as follows.
 \begin{enumerate}
@@ -162,6 +176,7 @@ The input of a \cep are streams of atomic events. These atomic events can come f
 If an \cep supports it, it is possible to mix input streams, and rules can interconnect these event sources.
 
 \subsection{Patterns}
+\label{subsec:cep_patterns}
 Event processors provides formalisms to describe patterns.
 
 The complex nature of the rules comes from the usage of the reference of other patterns. One pattern might depend on the activation of another pattern.
@@ -169,10 +184,11 @@ The complex nature of the rules comes from the usage of the reference of other p
 With this functionality, one can build hierarchical system of pattern. Instead of creating one big pattern\,---if its even possible---\,containing all the functionality, divided smaller, reusable patterns can be written.
 
 \subsection{Engine}
+\label{subsec:cep_engine}
 
 A \cep is built around it's execution engine. The engine accepts the input stream(s), and output is the matches of the patterns. In monitoring situations the output of engine is the event of an erroneous state of the monitored process (\cref{fig:cep_monitoring_event_flow}).
 
-\begin{figure}[!h]
+\begin{figure}
 	\centering
 	\begin{tikzpicture}[
 			start chain=going below,
