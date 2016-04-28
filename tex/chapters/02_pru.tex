@@ -3,7 +3,7 @@
 
 This chapter will discuss the capabilities, and usage of the Programmable Realtime Unit (\textls{PRU}).
 
-Even with realtime operating systems, no process can allocate hundred percent time of a CPU. There are essential OS management tasks, which handles the hardware. These management tasks need to be executed periodically.
+Even with realtime operating systems, no process can take up hundred percent time of a CPU. There are essential OS management tasks, which handles the hardware. These management tasks need to be executed periodically.
 
 \section{Example}
 \label{subsec:example}
@@ -13,14 +13,6 @@ This example illustrates the usability of an external control unit, if the syste
 \begin{figure}[h]
 	\centering
 	\begin{tikzpicture}[
-			squarednode/.style={
-				rectangle,
-				draw=black,
-				very thick,
-				minimum height=2cm,
-				minimum width=2.5cm,
-				inner sep=.2cm,
-			},
 			label/.style={
 				font=\footnotesize
 			}
@@ -30,22 +22,22 @@ This example illustrates the usability of an external control unit, if the syste
 
 		\draw[thick,->] (A.east) -- ++(4,0) node[above,pos=0.12] (AB) {};
 		\draw[very thick,->] (B.east) -- ++(4,0) node[midway,above,text width = 3cm] {To controlled unit};
-		\timing (AB) {6{1C0.5C}C};
+		\timing at (AB) {6{1C 0.5C}C};
 	\end{tikzpicture}
-	\caption{A bit--banging solution}
+	\caption{A bit--banging solution for PWM}
 	\label{fig:example_pwm}
 \end{figure}
 
-\cref{fig:example_pwm} depicts the example. Our example consist of a computer (\rtos), and a controller. The \rtos component is sending a pulse width modulated signal (\pwm) to the controller. The controlling computer does not have an integrated \pwm controller, and the signal modulation must done by software. This method, when a commonly hardware peripheral is emulated called \emph{bit--banging}.
+\cref{fig:example_pwm} depicts the example. Our example consist of a computer (\rtos), and a controller. The \rtos component is sending a pulse width modulated signal (\pwm) to the controller. The controlling computer does not have an integrated \pwm controller, and the signal modulation must done by software. This method when a typically hardware implemented peripheral is emulated called \emph{bit--banging}.
 
-Let's say the controller needs a very precise signal, because a small change in the width of the modulated signal cause a big difference in the output of the controller. This means the solution needs the smallest reachable jitter.
+In use cases where the controller needs a very precise signal, because a small change in the width of the modulated signal cause a big difference in the output of the controller. This means the solution needs the smallest reachable jitter.
 
 This example relies on the measurements of \citep{rt-sched-thesis}, which uses the same development platform this chapter will discuss. It is important to point out the measurements were done on a soft real--time OS. Other commercial products which specializes in hard real--time (VxWorks, µC/OS-II) might reach better performance, but this chapter will reveal alternate solutions.
 
-\subsubsection{Evaluation}
+\subsection{Evaluation}
 
-At PWM frequency 50ms, the system was capable of a completely precision software based control. At 10ms, the best achievable jitter was $1.32\%$, and at 1ms, $4.1\%$.
-Because the computer is not totally dedicated to generate our control signal, jitter can happen. If our specification has low jitter requirements, this solution is not applicable to our design.
+At PWM period of 50ms, the system was capable generating accurate control signal from software. At 10ms, the best achievable jitter was $1.32\%$, and at 1ms, $4.1\%$.
+Because the computer is not totally dedicated to generate our control signal, jitter can happen. If the specified system requires low jitter, this solution may not be applicable to the design.
 
 \section{Delegation of real--time functionality}
 
@@ -53,41 +45,29 @@ One possibile solution for \cref{subsec:example} is to delegate this task to an 
 
 \begin{figure}[h]
 	\centering
-	\begin{tikzpicture}[
-			squarednode/.style={
-				rectangle,
-				draw=black,
-				very thick,
-				minimum height=2cm,
-				minimum width=2.5cm,
-				inner sep=.2cm,
-			},
-			label/.style={
-				font=\footnotesize
-			}
-		]
-		\node[squarednode] (A) [] {\rtos};
-		\node[squarednode] (B) [right = 2cm of A] {Microcontroller};
+	\begin{tikzpicture}
+		\node[squarednode] (A) [text width=1.5cm] {\rtos};
+		\node[squarednode] (B) [below = 1.5cm of A] {Microcontroller};
 		\node[squarednode] (C) [right = 2cm of B] {Controller};
 
-		\draw[thick,->] (A.east) -- ++(2,0) node[midway, above]{\small Command};
-		\draw[thick,->] (B.east) -- ++(2,0) node[above,pos=0.12] (AB) {};
-		\draw[very thick,->] (C.east) -- ++(2,0) node[midway,above,text width = 1.8cm] {To controlled unit};
-		\timing (AB) {2{1C0.5C}C};
+		\draw[thick,->] (A) -- (B) node[midway, right] {Commands};
+		\draw[thick,->] (B) -- (C) node[above,pos=0.12] (AB) {};
+		\draw[very thick,->] (C.east) -- ++(3.7,0) node[midway,above] {To controlled unit};
+		\timing[timing/slope=.25] at (AB) {3{0.8C0.4C}C};
 	\end{tikzpicture}
 	\caption{An external microcontroller as PWM signal source}
 	\label{fig:example_external_pwm}
 \end{figure}
 
-With this approach we have a external component. This component\,---often in a form of a microcontroller---\,is a completely separate unit. The communication between these units can be done with protocols designed to tolerate errors in timing, like the Inter-Integrated Circuit (\isc) protocol.
+With this approach the design have an external component. This component, usually a microcontroller, is a completely separate unit. The communication between these units can be done with protocols designed to tolerate errors in timing e.g. the Inter-Integrated Circuit (\isc) protocol.
 
-The only job of the microcontroller is to generate the corresponding controlling signal. This is a far more controlled environment, because microcontrollers don't usually run operating systems\,---and while interrupt handling might cause problems\,---the order of robustness is definitely higher than RTOS based solutions.
+The only job of the microcontroller is to generate the corresponding controlling signal. This is a far more controlled environment, because microcontrollers don't usually run operating systems\,--and while interrupt handling might cause problems\,--the order of robustness is definitely higher than RTOS based solutions.
 
-On the downside, the design have an extra external component which is an overhead in the design and programming process. The optimal solution would be to merge the two processors into one.
+On the downside, the design have an additional external component which is an overhead in the design and programming process. The optimal solution would be to merge the two processors into one.
 
 \section{Programmable realtime unit}
 
-Instead of having an external component (\cref{fig:ext_controller_hw}), this external coprocessor could be integrated into the integrated circuit of the central processing unit (\cref{fig:int_controller_hw}).
+Instead of having an external controller (\cref{fig:ext_controller_hw}), this external coprocessor could be integrated into the integrated circuit of the central processing unit (\cref{fig:int_controller_hw}).
 
 This can be beneficial because we need less external components, and because of the integrated property of this solution, the communication with the coprocessor is reliable.
 
@@ -95,19 +75,7 @@ Additionally the coprocessor can use some of the resources of the host \cpu whic
 
 \begin{figure}[h]
 	\centering
-	\begin{tikzpicture}[
-			squarednode/.style={
-				rectangle,
-				draw=black,
-				very thick,
-				align=center,
-				minimum height=2cm,
-				inner sep=.5cm,
-			},
-			label/.style={
-				font=\footnotesize
-			}
-		]
+	\begin{tikzpicture}
 		\node[squarednode] (A) [] {Main computing unit};
 		\node[squarednode] (B) [right = 4cm of A] {External controller};
 
@@ -120,29 +88,22 @@ Additionally the coprocessor can use some of the resources of the host \cpu whic
 \begin{figure}[h]
 	\centering
 	\begin{tikzpicture}[
-			squarednode/.style={
-				rectangle,
-				draw=black,
-				very thick,
-				inner sep=.5cm,
-			},
 			innernode/.style={
-				minimum height=3cm,
+				minimum height=1cm,
 				text width=2.8cm,
 				align=center
 			}
 		]
 
-		\node[squarednode] (A) [ultra thick, minimum height=5cm, minimum width=9.5cm] {};
-		\node [above = 2mm of A.south] {\textbf{\large IC}};
-		\node [above = 5mm of A.north] {};
+		\node[squarednode, innernode] (ECU) [] {Embedded controller};
+		\node[squarednode, innernode] (MCU) [left = of ECU.west] {Central processing unit};
+		\node[squarednode] (A) [ultra thick, fit=(ECU) (MCU), inner ysep=5mm, inner xsep=5mm] {};
 
-		\node[squarednode, innernode] (ECU) [left = 5mm of A.east] {Embedded controller};
-		\node[squarednode, innernode] (MCU) [right = 5mm of A.west] {Central processing unit};
+		\node [above = 2mm of A.south] {\textbf{\large IC}};
 
 		\draw [thick,<->] (ECU.west) -- (MCU.east);
-		\draw [thick,<->] (MCU.north) -- ++(0, 2);
-		\draw [thick,<->] (ECU.north) -- ++(0, 2) ;
+		\draw [thick,<->] (MCU.north) -- ++(0, 1);
+		\draw [thick,<->] (ECU.north) -- ++(0, 1) ;
 	\end{tikzpicture}
 	\caption{Integrated coprocessor}
 	\label{fig:int_controller_hw}
@@ -150,7 +111,7 @@ Additionally the coprocessor can use some of the resources of the host \cpu whic
 
 \subsection{AM335x processor family}
 
-The AM335x is the Texas Intruments' ARM Cortex-A8 processor family \citep{AM335x}. Our focus will be the AM3358 processor, because the BeagleBone Black \citep{BBB} utilizes this \cpu. The BeagleBone Black is the reference system this thesis will use.
+The AM335x is the Texas Intruments' ARM Cortex-A8 processor family \citep{AM335x}. This thesis will focus on the AM3358 processor, because the BeagleBone Black \citep{BBB} has this \cpu. The BeagleBone Black is the reference system this case study will use.
 
 The AM335x processor family have four member (AM3359, AM3358, AM3357, AM3356) which have special unit called \emph{Programmable Realtime Unit and Industrial Communication SubSystem} (\pruss). A \pruss consists two \emph{Programmable Realtime Unit} (\pru). These units are Hardware architecture based microcontrollers which can be programmed by an application running on the central processing unit.
 
@@ -171,7 +132,7 @@ The basic properties of the AM335x \pruss (be warned, there are previous generat
 	\item An interrupt controller shared between the \pru cores
 	\item Access to the system peripherals, e.g.: DRAM, GPIO
 	\begin{itemize}
-		\item System DRAM access is possible, but indeterministic
+		\item System DRAM access is possible, but nondeterministic
 		\item GPIO handling is direct, meaning I/O can be handler with \SI{5}{\nano\second} resolution.\footnote{The sustainable maximal frequency achievable is \SI{50}{\mega\hertz}, because the toggle loop takes 4 instructions to execute.}
 	\end{itemize}
 \end{itemize}
@@ -255,7 +216,7 @@ Texas Instruments' main goal with this coprocessor was to maximize the determini
 
 \subsubsection{Execution}
 
-On the \pru, every instruction takes \SI{5}{\nano\second} to execute. This is an interesting design pattern, because on most architecture the execution cycle varies with instructions e.g. the \emph{JUMP} instruction always need more execution cycle than a simple addition. The \pru aarchitecture is uniformial. This uniformity helps the static analysis of code, because there are no corner cases in the cycle counts.
+On the \pru, every instruction takes \SI{5}{\nano\second} to execute. This is an interesting design pattern, because on most architecture the execution cycle varies with instructions e.g. the \emph{JUMP} instruction always need more execution cycle than a simple addition. The \pru architecture is uniformial. This uniformity helps the static analysis of code, because there are no corner cases in the cycle counts.
 
 There is no pipelining, and out-of-order execution, so the processor execute the machine code in the exact same order it was compiled.
 
@@ -352,5 +313,5 @@ A prepared Makefile recommended for \pru code compilation can be found in the re
 
 	\end{tikzpicture}
 	\caption{The directory structure of a typical \pru application}
-	\label{fig:y_model}
+	\label{fig:pru_dir_structure}
 \end{figure}

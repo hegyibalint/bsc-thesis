@@ -4,9 +4,9 @@ PROJECTNAME=BScThesis
 
 all:
 	# Test if previos compilation was succesful, if not delete aux files
-	if [ -a out/run2.pid ]; then rm -f out/*; fi;
+	if [ -a out/run2.pid ]; then rm -rf out; fi;
 	if [ -a out/run1.pid ]; then touch out/run2.pid; fi;
-	mkdir -p out
+	mkdir -p out pdf
 	touch out/run1.pid
 
 	mkdir -p out out/include out/chapters pdf

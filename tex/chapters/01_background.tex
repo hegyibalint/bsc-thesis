@@ -28,20 +28,20 @@ Model based software development consists two main components:
 \begin{figure}[!h]
 	\centering
 	\begin{tikzpicture}[
-			start chain=going below,
-			squarednode/.style={
-				rectangle,
-				draw=black,
-				very thick,
-				minimum height=1.5cm,
-				text width=2.5cm,
-				inner sep=2mm,
-				align=center
-			},
-			every loop/.style={
-				looseness=2,
-				text width=2cm
-			}
+		start chain=going below,
+		squarednode/.style={
+			rectangle,
+			draw=black,
+			very thick,
+			minimum height=1.5cm,
+			text width=2.5cm,
+			inner sep=2mm,
+			align=center
+		},
+		every loop/.style={
+			looseness=2,
+			text width=2cm
+		}
 		]
 		\node[squarednode] (D1) {System\\Design Model};
 		\node[squarednode] (D2) [below = of D1, xshift = .5cm] {Architecture\\Design Model};
@@ -73,7 +73,7 @@ Model based software development consists two main components:
 		\draw[thick,<->] (D3.east) -- (V3.west);
 
 	\end{tikzpicture}
-	\caption{Diagram of the Y model}
+	\caption{Diagram of the Y model \citep{MDSD_INTRO}}
 	\label{fig:y_model}
 \end{figure}
 
@@ -103,8 +103,6 @@ Software components can communicate with the monitor via multiple ways. The comm
 	      \item\label{item:agent} Remotely by an agent. An embedded agent component is called from the monitored components, or the agent is actively extracting the monitored softwares' state. The agent then forwards this information to the monitor. The monitor can be virtually everywhere.
 \end{enumerate}
 
-... (Itt kellene arról beszélni, hogy mi lesz a case study-ban)
-
 \section{Complex event processing}
 
 Complex event processing (\cep) is a set of techniques and tools to help us understand and control event-driven information systems \citep{Luckham:2001:PEI:515781}.
@@ -125,21 +123,19 @@ The basic workflow for monitoring with \cep is illustrated in \cref{fig:cep_moni
 \begin{figure}
 	\centering
 	\begin{tikzpicture}[
-			start chain=going below,
-			squarednode/.style={
-				rectangle,
-				draw=black,
-				very thick,
-				minimum height=1cm,
-				minimum width=2.5cm,
-				inner sep=.2cm,
-				on chain
-			},
+		start chain=going below,
+		node distance=5mm,
+		squarednodec/.style={
+			squarednode,
+			on chain,
+			text width = 4cm,
+			align = center
+		},
 		]
-		\node[squarednode] (A) {High level specification};
-		\node[squarednode] (B) {Pattern creation};
-		\node[squarednode] (C) {Generation of monitor};
-		\node[squarednode] (D) {Monitor execution};
+		\node[squarednodec] (A) {High level specification};
+		\node[squarednodec] (B) {Pattern creation};
+		\node[squarednodec] (C) {Generation of monitor};
+		\node[squarednodec] (D) {Monitor execution};
 
 		\draw[thick, ->] (A) -- (B);
 		\draw[thick, ->] (B) -- (C);
@@ -191,26 +187,23 @@ A \cep is built around it's execution engine. The engine accepts the input strea
 \begin{figure}
 	\centering
 	\begin{tikzpicture}[
-			start chain=going below,
-			squarednode/.style={
-				rectangle,
-				draw=black,
-				very thick,
-				minimum height=1cm,
-				minimum width=2.5cm,
-				inner sep=.2cm,
-				on chain
-			},
+		start chain=going below,
+		node distance = 3mm,
+		squarednodec/.style={
+			squarednode,
+			on chain,
+			align = center,
+		}
 		]
-		\node[squarednode] (A) {Direct stream};
-		\node[squarednode] (B) {Model change};
-		\node[squarednode] (C) {Database};
-		\node[squarednode, minimum height=2cm] (D) [right = 2cm of B] {CEP Engine};
+		\node[squarednodec] (A) {Direct stream};
+		\node[squarednodec] (B) {Model change};
+		\node[squarednodec] (C) {Database};
+		\node[squarednodec, minimum height=2cm] (D) [right = 2cm of B] {CEP Engine};
 
 		\draw[thick, ->] (A.east) -- (D);
 		\draw[thick, ->] (B.east) -- (D);
 		\draw[thick, ->] (C.east) -- (D);
-		\draw[thick, ->] (D.east) -- ++(2,0) node [above, pos = 0.8, text width = 2.5cm] {Error\\signals};
+		\draw[thick, ->] (D.east) -- ++(3,0) node [above, midway] {Error signals};
 
 		\draw[thick, ->] (5,0.5) -- ++(2,0) node [pos = 1.5] {Event flow};
 
@@ -223,32 +216,62 @@ A \cep is built around it's execution engine. The engine accepts the input strea
 
 Traditionally complex event processors are complex frameworks like databases, and modeling frameworks. The aim of this thesis to generate small, but effective code, and run it on embedded environments, where it's impossible to run a full \cep software stack.
 
-\section{Real--time systems}
+\section{Real-time systems}
 
-Real--time systems have some temporal constraints (deadline), which the system must satisfy. In a real--time system the correctness of behavior not only depend on the control logic, but on the temporal properties of it. These constrains often focused on the response time of the system in case of events.
+Real-time systems have some temporal constraints (deadline), which the system must satisfy. In a real-time system the correctness of behavior not only depend on the control logic, but on the temporal properties of it. These constrains often focused on the response time of the system in case of events.
 
-We can divide real--time systems into two main category: hard and soft real--time.
+We can divide real-time systems into two main category: hard and soft real-time.
 
-\subsubsection{Hard real--time}
+\subsubsection{Hard real-time}
 
-Hard realtime systems have precisely defined deadlines which the system must suffice. If the system hit a deadline, it is considered a failure. An example of a hard--realtime system is an airbag controller inside a car. After a collision, there is a very narrow time band where the airbag must be deployed. A hard--realtime system must have some proof they can deterministically handle these situations without hitting a deadline.
+Hard realtime systems have precisely defined deadlines which the system must suffice. If the system hit a deadline, it is considered a failure. An example of a hard-realtime system is an airbag controller inside a car. After a collision, there is a very narrow time band where the airbag must be deployed. A hard-realtime system must have some proof they can deterministically handle these situations without hitting a deadline.
 
-\subsubsection{Soft real--time}
+\subsubsection{Soft real-time}
 
-Soft real--time differ from hard--realtime system in the way they stay correct if they miss the deadline, but operation between time constraints needed for normal functionality. One example is the processing of mouse input. If the processing of mouse input lags, it can be annoying for the user. Nonetheless the functionality stays intact, but the usability seriously degrades.
+Soft real-time differ from hard-realtime system in the way they stay correct if they miss the deadline, but operation between time constraints needed for normal functionality. One example is the processing of mouse input. If the processing of mouse input lags, it can be annoying for the user. Nonetheless the functionality stays intact, but the usability seriously degrades.
 
 \subsection{Realtime operating systems}
 
 The type of an operating system is defined by how the scheduler decides which program to run and when. For example, the scheduler used in a multi user operating system (such as Unix) will ensure each user gets a fair amount of the processing time. As another example, the scheduler in a desktop operating system (such as Windows) will try and ensure the computer remains responsive to its user.
 
-The scheduler in a \emph{Real Time Operating System} (\rtos) is designed to provide a predictable\,---normally described as deterministic---\,execution pattern. This is particularly of interest to embedded systems as embedded systems often have real time requirements. A real time requirements is one that specifies that the embedded system must respond to a certain event within a strictly defined time (the deadline). A guarantee to meet real time requirements can only be made if the behavior of the operating system's scheduler can be predicted (and is therefore deterministic).\citep{RTOS}
+The scheduler in a \emph{Real Time Operating System} (\rtos) is designed to provide a predictable\,--normally described as deterministic--\,execution pattern. This is particularly of interest to embedded systems as embedded systems often have real time requirements. A real time requirements is one that specifies that the embedded system must respond to a certain event within a strictly defined time (the deadline). A guarantee to meet real time requirements can only be made if the behavior of the operating system's scheduler can be predicted (and is therefore deterministic).\citep{RTOS}
 
 Most of the safety oriented systems based around realtime operating systems. It is important to understand realtime operating systems exists to provide determinism, and not additional performance. With these response guarantees, the software engineer can be sure the incoming interrupt will be served, and the software components responsible for the processing will get \cpu time between the guaranteed limits.
 
 \section{Mission critical systems}
 
-A mission critical system is which failure can cause severe financial loss, natural disaster, or loss of human lives. Most of the time mission critical systems utilizes hard--realtime systems. Association between mission critical systems, and hard--realtime is common, but there are counterexamples:
+A mission critical system is which failure can cause severe financial loss, natural disaster, or loss of human lives. Most of the time mission critical systems utilizes hard-realtime systems. Association between mission critical systems, and hard-realtime is common, but there are counterexamples:
 
-One example is a bank transaction software. A transaction execution software does not need to execute transactions in real--time, but if a transaction does not executed correctly, it can mean serious financial loss.
+One example is a bank transaction software. A transaction execution software does not need to execute transactions in real-time, but if a transaction does not executed correctly, it can mean serious financial loss.
 
 Another example is a printer head. A printer head is a hard real time component, because if it hits the specified deadline, the output will not be correct. A misprinted page from a desktop printer doesn't meet the definition of a mission critical system.
+
+\section{Domain specific language}
+
+A domain-specific language (\dsl) is a programming language or executable specification language that offers, through appropriate notations and abstractions, expressive power focused on, and usually restricted to, a particular problem domain \citep{van2000domain}.
+
+\dsl{}s are useful, because the language's designer completely in control of the language, and the constraints. These constrains can help the designer get real-time feedback about the correctness of the code written in \dsl. For example an automaton definition \dsl can support design time checking states of an automaton, and provide feedback to the designer which states are unreachable.
+
+\section{Eclipse}
+
+Eclipse is an open integrated development environment (\textls{IDE}) actively developed since 2001. Eclipse is the main platform of modeling tools, e.g. \emf, \textls{AUTOSAR}, \textls{UML}, \textls{SysML}.
+
+Eclipse achieve this modularity with it's radical usage of plug-ins. The entire \textls{IDE} is built around plug-ins. A representative example is the Eclipse \textls{IDE} this thesis was developed on, contains 1653 plug-ins itself.
+
+To make such a distributed plug-in network usable, Eclipse utilizes the Open Services Gateway initiative (\textls{OSGi}) framework. The \textls{OSGi} framework uses the extra metadata bundled with Java packages to handle dependency requirements inside the runtime, and to interconnect the plug-ins with each other.
+
+\subsection{Eclipse Modelign Framework}
+
+The Eclipse Modelign Framework (\emf) is a well development modeling framework to support model creation for model driven development.
+
+Many frameworks, like the \viatra framework. Such frameworks can use the notification support coming out of the box with \emf to support advanced incremential features.
+
+\begin{itemize}
+	\item Visual model editing. The \emf editor gives a tree based, or completely cal editing of it's models.
+	\item Notification support for change events.
+	\item Code generation features.
+	      \begin{itemize}
+	      	\item Model code generation. The framework can generate Java classes, which can be used from any Java application.
+	      	\item Editor code generation. A generated editor as an Eclipse plugin, which gives the developer a basic tool to assemble an instance model.
+	      \end{itemize}
+\end{itemize}

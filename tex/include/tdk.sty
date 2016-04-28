@@ -272,11 +272,25 @@
 %
 
 \RequirePackage{graphicx}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
 
 \RequirePackage{tikz}
 \RequirePackage{tikz-timing}
-\usetikzlibrary{chains,trees}
+\usetikzlibrary{chains,trees,fit}
 \tikzset{>=latex}
+
+\tikzset{
+	squarednode/.style={%
+		rectangle,
+		draw=black,
+		very thick,
+		align=center,
+		minimum height=.8cm,
+		text width=2.5cm,
+		inner sep=.2cm,
+	}
+}
 
 \RequirePackage{fancyvrb}
 

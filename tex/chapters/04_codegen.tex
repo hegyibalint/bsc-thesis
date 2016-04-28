@@ -1,2 +1,149 @@
 \chapter{Code Generation}
 \label{chap:codegen}
+
+This chapter will introduce the basics of code generation, and depict the process used to generate the code used in the case study.
+
+\section{Introduction}
+
+Code generation is the process of transformation of a domain-specific language to another domain-specific language. The transformation's input and output type can be different, the main combinations are the following.
+\begin{itemize}
+	\item \mtt: Model to text generation. This generation takes a model, and generate textual artifact from it. The generated text can be source code, documentation, or any textual artifact. An example for \mtm generation is the generation of JavaDoc. The input is the AST of the Java code, and the output is the textual documentation of the code.
+	\item \mtc: Model to code generation. \mtc is a special case of \mtt, where the artifact is compilable, or executable code from a model. One use case of \mtc generation is the final step of a model driven software development.
+	\item \mtm: Model to model generation. \mtm generators take a model, and transform it to another model.
+\end{itemize}
+
+\cref{fig:model_transformations} depict an example of these transformations, where the source and result of the generation is textual. This textual source can be any programming language like Java, \cpp{}. \cref{fig:model_transformation_cpp} depict a situation where the developer create a textual representation of a finite automaton (FA) in a given formalism (Code$_\text{FA}$).
+
+This formalism can be converted into a model (Model$_\text{FA}$). With \mtm transformation, the model can be converted into a model (Model$_\text{\cpp{}}$), which is applicable of the generation of code output (Model$_\text{FA}$).
+
+This example converts from a domain specific language of finite automation to the domain specific language of an imperative programming language.
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		\node[squarednode] (M1) [] {Model$_1$};
+		\node[squarednode] (T1) [below = of M1] {Text$_1$};
+
+		\node[squarednode] (M2) [right = 2cm of M1] {Model$_2$};
+		\node[squarednode] (T2) [below = of M2] {Text$_2$};
+
+		\draw [thick, <->] (M1) -- (M2) node [midway, above] {M2M};
+		\draw [thick, densely dashed, <->] (T1) -- (T2) node [midway, above] {T2T};
+		\draw [thick, <->] (M1) -- (T1) node [midway, left] {M2T/M2C};
+		\draw [thick, <->] (M2) -- (T2) node [midway, right] {M2T/M2C};
+	\end{tikzpicture}
+	\caption{Usage of code generation from text to text}
+	\label{fig:model_transformations}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		\node[squarednode] (M1) [] {Model$_\text{FA}$};
+		\node[squarednode] (T1) [below = of M1] {Code$_\text{FA}$};
+
+		\node[squarednode] (M2) [right = 2cm of M1] {Model$_\text{\cpp{}}$};
+		\node[squarednode] (T2) [below = of M2] {Code$_\text{\cpp{}}$};
+
+		\draw [thick, ->] (M1) -- (M2) node [midway, above] {\mtm};
+		\draw [thick, densely dashed, <->] (T1) -- (T2) node [midway, above] {T2T};
+		\draw [thick, <-] (M1) -- (T1) node [midway, left] {\ttm};
+		\draw [thick, ->] (M2) -- (T2) node [midway, right] {\mtt};
+	\end{tikzpicture}
+	\caption{Workflow of}
+	\label{fig:model_transformation_cpp}
+\end{figure}
+
+\section{Code generator structure}
+
+The structure of a given code generator describes it's performance, reusability, and maintainability.
+
+\subsection{Dedicated code generator}
+\label{subsec:dedicated_code_generator}
+
+Dedicated code generators described as generators where the generator itself are black box, and the (\cref{fig:dedicated_code_generator}). The developer creates a model, which can be processed by the generator, and converts it by the code generator. The reason behind this black-box model is because the huge intellectual property these code generators represents. For example Mathworks' Embedded Code Generator, or Simulink \citep{MATHWORKS_ECG}\citep{MATHWORKS_SIMULINK} considered as a dedicated code generator.
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[
+			every node/.style = {
+				align=center
+			}
+		]
+		\node[squarednode] (M) [] {Model};
+		\node[squarednode] (DCG) [right = of M, text width=3cm] {Dedicated Code Generator};
+		\node[squarednode, fill=black!10] (TA) [right = of DCG] {Textual artifact};
+
+		\draw [thick, ->] (M) -- (DCG);
+		\draw [thick, ->] (DCG) -- (TA);
+		\draw [thick, double equal sign distance, <-] (DCG.north) -- +(0,1) node [pos=0.65, right, xshift=1mm] {Parameters};
+	\end{tikzpicture}
+	\caption{Dedicated code generator structure}
+	\label{fig:dedicated_code_generator}
+\end{figure}
+
+\subsection{Template based generator}
+
+Template based code generators (\cref{fig:template_code_generator}) offer a different approach other than dedicated code generators (\cref{subsec:dedicated_code_generator}). Instead of model only input, which serves as data source for the generator, template based generators follows a more flexible approach.
+
+Next to the model, the designer provides a template. This template combined with the data generates a valid output.
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[
+			every node/.style = {
+				align=center,
+				anchor=north west
+			}
+		]
+		\node[squarednode] (M) at (0,0) [] {Model};
+		\node[squarednode] (T) at (0,1) [below = of M] {Template};
+		\node[squarednode] (DCG) at (4,0) [text width=4cm, minimum height=3cm] {}
+		node [below = 0.1cm of DCG.north] {Template\\compiler/generator}
+		node [squarednode] [above = 0.25cm of DCG.south, text width=3cm] {Executable\\template code};
+		\node[squarednode, fill=black!10] (TA) [right = of DCG] {Textual artifact};
+
+		\draw [thick, ->] (M.east) -- ++(1.05,0);
+		\draw [thick, ->] (T.east) -- ++(1.05,0);
+		\draw [thick, ->] (DCG) -- ++(TA);
+		\draw [thick, double equal sign distance, <-] (DCG.north) -- +(0,1) node [pos=0.65, right, xshift=1mm] {Parameters};
+
+	\end{tikzpicture}
+	\caption{Template code generator structure}
+	\label{fig:template_code_generator}
+\end{figure}
+
+One of the proven template based generator is the Xtend language. Before getting into Xtend, the following sections will represent the technologies Xtend is built around.
+
+\subsection{ANTLR}
+
+\textls{ANTLR} (ANother Tool for Language Recognition) is a powerful parser generator for reading, processing, executing, or translating structured text or binary files. It's widely used to build languages, tools, and frameworks. From a grammar, ANTLR generates a parser that can build and walk parse trees \citep{ANTLR}.
+
+\textls{ANTLR} is a very powerful framework, not just because it's expressiveness, but the support of runtime languages it can generate parsers to. \textls{ANTLR} supported runtime languages are.
+\begin{itemize}
+	\item \textls{C\#}
+	\item Java
+	\item JavaScript
+	\item Python2
+	\item Python3
+\end{itemize}
+
+Besides the runtime languages, various other languages are implemented in form of grammars, so they became parsable by \textls{ANTLR}. Currently 88 various languages have \textls{ANTLR} grammar.
+
+\section{Xtext}
+
+Xtext is a frameworks built around a subset of \textls{ANTLR}. The reason behind the restriction of \textls{ANTLR} language's expressiveness  is to make it compatible with Eclipse technologies like \emf, which is the backbone of Xtext. The language written in Xtext automatically translates to an \emf metamodel, which serves as an abstract syntax tree (\textls{AST}) metamodel. As the developer writes a DSL previously defined by an Xtext language, the corresponding \emf metamodel is instantiated
+
+Xtext, like EMF integrates itself into Eclipse. Xtext languages generates editors with code completion support, and with other technologies like Sirius, graphical editing features can be implemented without coding.
+
+\section{Xtend}
+
+Xtend is an Xtext languange. Xtend is a language specialized in \mtt code generation, but can be used as a mixed functional-imperative object-oriented programming language. The following sections will depict the functionalities useful for \mtt generation.
+
+Xtend is compiled to Java source code, therefore the code can be reviewed with tools specialized to Java.
+
+\subsection{Extension methods}
+
+One of the most powerful extension to the Java languages in Xtend are extension methods. The basic concept comes from the \textls{C\#} language, where types can be extended with methods next to existing types methods implemented inside the type's source code.
+
+While \textls{C\#} uses a special syntax to mark the extension methods (the first parameter is the extended object, and the parameter is marked with the \emph{this} keyword), Xtend define an extension method
