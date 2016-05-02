@@ -138,7 +138,7 @@
 \RequirePackage{varioref}
 
 % Use cleveref for labels far away (loaded after hyperref)
-\renewcommand*{\reftextfaraway}[1]{on~\cpageref{#1}}
+\renewcommand*{\reftextfaraway}[1]{ on~\cpageref{#1}}
 
 % Now we can load hyperref
 \RequirePackage[
@@ -362,18 +362,68 @@
 %
 
 \RequirePackage{listings}
-\lstset{
-  basicstyle=\ttfamily,columns=fullflexible,
-  captionpos=t,belowcaptionskip=0.7\baselineskip,
-  frame=lines,framerule=\heavyrulewidth,
+
+\lstdefinelanguage{Xtend}{
+  keywords={var,val,cached,case,default,extension,false,import,let,new,null,private,create,switch,this,true,reexport,around,if,then,else,context},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  tabsize=4,
+  literate={[gl]}{\guillemotleft{}}{1}{[gr]}{\guillemotright{}}{1}
+}
+
+\lstdefinelanguage{ViatraQ}{
+  keywords={pattern, or},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  tabsize=4,
+}
+
+\lstdefinestyle{viatraq}{
+  language=ViatraQ,
+  basicstyle=\normalfont\ttfamily,
+  columns=fullflexible,
+  captionpos=t,
+  belowcaptionskip=0.7\baselineskip,
+  frame=lines,
+  framerule=\heavyrulewidth,
   numberbychapter=true,
-  showspaces=false,showtabs=false,tabsize=4,
-  breaklines=true,breakatwhitespace=true,
-  numbers=left,numberstyle=\scriptsize,numberblanklines=false,
-  xleftmargin=2em,framexleftmargin=2em,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=4,
+  breaklines=true,
+  breakatwhitespace=true,
+  numbers=left,
+  numberstyle=\scriptsize,
+  numberblanklines=false,
+  xleftmargin=2em,
+  framexleftmargin=2em,
   commentstyle=\color{black!75}\clearthin,
   stringstyle=\color{black!75},
-  language=[Sharp]C,morekeywords={var,yield,get,set}
+}
+
+\lstdefinestyle{xtext}{
+  language=Xtend,
+  basicstyle=\normalfont\ttfamily,
+  columns=fullflexible,
+  captionpos=t,
+  belowcaptionskip=0.7\baselineskip,
+  frame=lines,
+  framerule=\heavyrulewidth,
+  numberbychapter=true,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=4,
+  breaklines=true,
+  breakatwhitespace=true,
+  numbers=left,
+  numberstyle=\scriptsize,
+  numberblanklines=false,
+  xleftmargin=2em,
+  framexleftmargin=2em,
+  commentstyle=\color{black!75}\clearthin,
+  stringstyle=\color{black!75},
 }
 
 % http://tex.stackexchange.com/a/47694

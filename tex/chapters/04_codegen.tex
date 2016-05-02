@@ -1,5 +1,7 @@
+%!TEX root = ../main.tex
+
 \chapter{Code Generation}
-\label{chap:codegen}
+\label{ch:codegen}
 
 This chapter will introduce the basics of code generation, and depict the process used to generate the code used in the case study.
 
@@ -83,6 +85,7 @@ Dedicated code generators described as generators where the generator itself are
 \end{figure}
 
 \subsection{Template based generator}
+\label{subsec:template_based_generator}
 
 Template based code generators (\cref{fig:template_code_generator}) offer a different approach other than dedicated code generators (\cref{subsec:dedicated_code_generator}). Instead of model only input, which serves as data source for the generator, template based generators follows a more flexible approach.
 
@@ -115,6 +118,8 @@ Next to the model, the designer provides a template. This template combined with
 
 One of the proven template based generator is the Xtend language. Before getting into Xtend, the following sections will represent the technologies Xtend is built around.
 
+\section{Tools}
+
 \subsection{ANTLR}
 
 \textls{ANTLR} (ANother Tool for Language Recognition) is a powerful parser generator for reading, processing, executing, or translating structured text or binary files. It's widely used to build languages, tools, and frameworks. From a grammar, ANTLR generates a parser that can build and walk parse trees \citep{ANTLR}.
@@ -130,20 +135,82 @@ One of the proven template based generator is the Xtend language. Before getting
 
 Besides the runtime languages, various other languages are implemented in form of grammars, so they became parsable by \textls{ANTLR}. Currently 88 various languages have \textls{ANTLR} grammar.
 
-\section{Xtext}
+\subsection{Xtext}
 
 Xtext is a frameworks built around a subset of \textls{ANTLR}. The reason behind the restriction of \textls{ANTLR} language's expressiveness  is to make it compatible with Eclipse technologies like \emf, which is the backbone of Xtext. The language written in Xtext automatically translates to an \emf metamodel, which serves as an abstract syntax tree (\textls{AST}) metamodel. As the developer writes a DSL previously defined by an Xtext language, the corresponding \emf metamodel is instantiated
 
 Xtext, like EMF integrates itself into Eclipse. Xtext languages generates editors with code completion support, and with other technologies like Sirius, graphical editing features can be implemented without coding.
 
-\section{Xtend}
+\subsection{Xtend}
 
 Xtend is an Xtext languange. Xtend is a language specialized in \mtt code generation, but can be used as a mixed functional-imperative object-oriented programming language. The following sections will depict the functionalities useful for \mtt generation.
 
 Xtend is compiled to Java source code, therefore the code can be reviewed with tools specialized to Java.
 
-\subsection{Extension methods}
+\subsubsection{Extension methods}
 
 One of the most powerful extension to the Java languages in Xtend are extension methods. The basic concept comes from the \textls{C\#} language, where types can be extended with methods next to existing types methods implemented inside the type's source code.
 
-While \textls{C\#} uses a special syntax to mark the extension methods (the first parameter is the extended object, and the parameter is marked with the \emph{this} keyword), Xtend define an extension method
+While \textls{C\#} uses a special syntax to mark the extension methods (the first parameter marks the extended object, and the parameter is marked with the \emph{this} keyword), Xtend identify extension methods by the first parameter of the method, or using another variable's methods as extension methods with an additional \emph{extension} keyword in the variable declaration.
+
+\subsubsection{Template expressions}
+
+From the code generating point of view, template expressions are the most useful feature of the language. With template expressions, one can write strings which serves as the generation templates. Template expressions defined by triple single quotes (\verb+'''+). Inside the template the guillemets (\verb+«»+) act as an escape character. Inside these guillemets one can write Xtend code, e.g. access iterator, or local variables.
+
+An example of template expression usage presented in \cref{fig:template_expression_example}. With the usage of template expressions, information of a model can be injected into the template, according to the description of \cref{subsec:template_based_generator}.
+
+\begin{figure}
+	\centering
+	\begin{lstlisting}[style=xtext]
+var acceptCode = '''
+	void Automaton_[gl]a.name[gr]::accept() {
+		// Implement accepting action here
+		return;
+	}
+'''
+	\end{lstlisting}
+	\caption{Template expression example}
+	\label{fig:template_expression_example}
+\end{figure}
+
+\subsubsection{Template keywords}
+
+The template syntax is expanded with keywords including
+\begin{itemize}
+	\item FOR, and ENDFOR
+	\item IF, and ENDIF
+\end{itemize}
+which can be used inside guillemets. These syntaxes helps the generation of lists, and special conditionally generated source blocks.
+
+\subsection{\viatraq/\incq}
+
+\viatraq \citep{ujhelyi2015emf} is an incremental graph pattern matcher over the \emf framework. In the year 2016, the project merged with the \viatra framework, and \incq was renamed to \viatraq.
+
+Code generation, model transformation, checking well formed constraints are problems which requires model traversal. One traditional technique of model traversal is the visitor pattern \citep{gamma1995design}. While the visitor patterns is a good approach, but it lacks scalability and support of incrementality.
+
+\subsubsection{Graph query}
+
+Imperative approaches might be feasible in smaller models and simple model structure, but the design process of a model traversal is a repetitive task resulting in a boilerplate code with high cyclomatic complexity.
+
+\viatraq solved this problem by utilizing \rete networks. The approach of \rete networks and how the required information if selected is very alike of relational calculus. One big added feature of the language is the support of transitive closure.
+
+The \dsl built for \viatraq is an Xtext based language with strong code-completion features deeply integrated into Eclipse and \emf. This \dsl supports writing queries in a declarative way, resulting in more effective design workflow and reduced debugging times.
+
+\begin{figure}
+	\centering
+	\begin{lstlisting}[style=viatraq]
+pattern EpsilonTransition(a: Automaton) {
+	Automaton.states.incomingTransitions(a, t);
+	EpsilonTransition(t);
+} or {
+	Automaton.states.outgoingTransitions(a, t);
+	EpsilonTransition(t);
+}
+	\end{lstlisting}
+	\caption{Example of an \viatraq graph pattern}
+	\label{fig:viatraq_example_pattern}
+\end{figure}
+
+\subsubsection{Runtime}
+
+While the design process workflow is coupled to Eclipse, the \viatraq runtime can be used in plain Java applications, therefore the platforms are not restricted to Eclipse installations.

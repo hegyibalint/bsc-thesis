@@ -1,5 +1,7 @@
+%!TEX root = ../main.tex
+
 \chapter{Programmable realtime unit}
-\label{chap:pru}
+\label{ch:pru}
 
 This chapter will discuss the capabilities, and usage of the Programmable Realtime Unit (\textls{PRU}).
 
@@ -270,7 +272,7 @@ To utilize the advanced communication between the host processor, and the \pru, 
 
 \subsubsection{Makefile}
 
-The compilation workflow is aided by the \verb+make+ utility.
+The compilation workflow is aided by the \verb+make+ utility. While the support libraries' makefile is written for Linux systems, it's compatible and was tested on \osx version \verb|10.11.4|.
 
 The \verb+make+\footnote{More information about make: \url{https://www.gnu.org/software/make/}} application is the most popular build tool in the open source community. It uses specific files called \emph{Makefile}. These files declaratively states the dependencies of each step of compilation. The advantages of using make is to:
 \begin{itemize}

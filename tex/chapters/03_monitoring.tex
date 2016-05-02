@@ -1,2 +1,51 @@
+%!TEX root = ../main.tex
+
 \chapter{Monitoring}
-\label{chap:monitoring}
+\label{ch:monitoring}
+
+The section will detail \cref{sec:verification_techniques} \reftextfaraway{sec:verification_techniques}, where monitoring as a runtime verification technique was introduced.
+
+As previously stated, monitoring is a runtime verification method, when the system is checked against a reduced model of the system. The monitor model contains error states, which represent non specified behavior. This reduced model easier to developed usually by model based technologies e.g. automatons, and checked by formal verification methods.
+
+\section{Example of monitor automaton}
+
+To illustrate how a reduced model can help the monitoring of a complex system, let's review a simple monitor automaton depicted in \cref{fig:example_monitoring_basics}.
+
+The example monitors a network communication. The monitored component sends a request\,--thus entering state \emph{2}--\, and waits for response. If the response arrived before the \SI{10}{\ms} elapsed, the automaton returns to state \emph{1}. If the wait for the response exceeds the \SI{10}{ms} time window, the automaton enters into the \emph{ERROR} state.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture} [
+			auto,
+			every path/.style = {
+				thick,
+				->
+			},
+		]
+		\node[circle, very thick, draw=black, minimum size=15mm] (A) [] {1};
+		\node[circle, very thick, draw=black, minimum size=15mm] (B) [right = 2.5cm of A] {2};
+		\node[circle, very thick, draw=black, minimum size=15mm, fill=black!10] (C) [right = 3cm of B] {ERROR};
+
+		\draw (A) ++(-2, 1) -- (A);
+		\draw (A) edge [bend left]
+			node [sloped, midway, above] {request sent} (B);
+		\draw (A) edge [bend right]
+			node [sloped, midway, below] {response received} (B);
+		\draw (B) edge [bend left]
+			node [sloped, midway, above] {after \SI{10}{\ms}} (C);
+
+	\end{tikzpicture}
+	\caption{Simple monitoring example}
+	\label{fig:example_monitoring_basics}
+\end{figure}
+
+
+The error state of the automaton represents a non-specified state. In the error state the monitor is active, various actions can be taken.
+\begin{itemize}
+	\item Signaling the error state to notify other components about the error state.
+	\item React in a possible way to prevent the non-specified state. For example disabling the system to ensure the safety of the system.
+\end{itemize}
+
+It's important to notice the monitor cannot always react against the non-specified behavior. If a critical component have a complete failure, the monitor can only signal the presence of the non-specified behavior.
+
+On the other hand, sometimes monitors are not designed to react to non-specified behavior. In aircraft systems, the aircraft system will not trying to fix an error. Instead of reacting, it passively monitors, and display error messages.
