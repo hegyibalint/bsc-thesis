@@ -3,31 +3,95 @@
 \chapter{Background}
 \label{ch:background}
 
-Nowadays, the complexity of software systems is increasing. As we develop more and more functionality in safety oriented solutions, we can reach a complexity level, where formal verification isn't enough on it's own to assure a specified behavior. With the introduction of Internet of Things (\iot), and new mobile communication technologies, systems are becoming dynamic, and this transition needs new embedded monitoring solutions.
+Nowadays, the complexity of software systems is increasing. Even in safety-critical or real-time systems, we can reach a complexity level where where we need computer aided analysis techniques to ensure correctness. With the introduction of Internet of Things (\iot), and new mobile communication technologies, systems are becoming mixed-critical. Such systems contain some components that are not checked for safety\,--because it's not possible, or it was not a design aspect --\,, but we need to make sure they.
 
 \section{Embedded systems}
 
-Embedded systems are units with dedicated functionality. Often embedded systems consists of more specialized units, which are interconnected by some network e.g. the \textls{CAN} bus in an automobile. A typical car can have microcontrollers from a dozen to ten dozens \citep{VEHICLE_DYN}.
+An embedded system is a microprocessor-based system that is built to control a function or range of functions and is not designed to be programmed by the end user in the same way that a \textls{PC} is~\cite{heath2002embedded}.
 
-Most of todays' microprocessors can be found in embedded electronics. Embedded systems considered more restricted compared to personal computers. Memory and computation power is limited, and most of the cases these systems needs to be real--time.
+Often embedded systems consist of more specialized units, which are interconnected by some network e.g.\ \textls{CAN} bus in an automobile. The number of different microcontrollers in a modern car scales from 10 up to even 100 \citep{VEHICLE_DYN}.
 
-Embedded systems often utilized in time critical solutions, where is simpler to delegate tasks to different processors compared to a shared, more powerful computer.
+Am embeddable microcontroller can be described as a
+\begin{itemize}
+	\item cost effective
+	\item small footprint
+	\item low end performance
+	\item small program and data memory
+\end{itemize}
+device. These devices often have specific architectures for best performance, cost, and energy consumption needs.
+\needspace{5em}
+\noindent On the other hand, a safety-critical system is a
+\begin{itemize}
+	\item reliable
+	\item deterministic
+	\item real-time
+\end{itemize}
+system. Such systems are often called mission-critical. A mission critical system is which failure can cause severe financial loss, natural disaster, or loss of human lives (\cref{sec:mission_critical_system}).
 
-With the rising of \emph{Single Board Computers} (\textls{SBC}) like Raspberry Pi, BeagleBone, ODROID, anybody can easily access embeddable hardware platforms. With the trending of IoT technologies e.g. sensor networks, manufacturers are moving towards more open sourced, accessible platforms which everybody can use.
+Conflicts in microcontroller and safety-critical specification are serious issues, and must be solved by special techniques which can bridge between the differences.
+
+With the rising of \emph{Single Board Computers} (\textls{SBC}) such as Raspberry Pi, BeagleBone, ODROID, anybody can easily access embeddable hardware platforms. With the trending of IoT technologies e.g.\ sensor networks, manufacturers are moving towards open source, accessible platform which everybody can use.
 
 \section{Model driven software developement}
 
-Using models to design complex systems is essential in traditional engineering disciplines. Models help us understand a complex problem and its potential solutions through abstraction. Therefore, it seems obvious that software systems, which are often among the most complex engineering systems, can benefit greatly from using models and modeling techniques. \citep{pastor2008model}
+Using models to design complex systems is essential in traditional engineering disciplines. Models help us to understand a complex problem and its potential solutions through abstraction. Therefore, it seems obvious that software systems\,--which are often complex engineering systems--\,can benefit greatly from using models and modeling techniques. \citep{pastor2008model}
 
-In safety--critical systems, model driven software development is mandatory. In these systems, e.g. requirement traceability is necessity. Without a model based software design process, the traceability of requirements and the development process of the components are hard to follow. In a traditional software development process, these documents would have been written by natural language on paper, or some electronically document format. Finding tracing information between documents in a complex system is almost impossible.
+By using models, the developers are using a common description of the system they are developing. Model based development is highly graphical, and a well designed image of class structure can be self documenting. Apart from documenting, models are interchangeable, and the interchange format is standardized e.g. XMI~\cite{XMI}. In safety-critical systems, model driven software development is highly recommended.
 
 Model based software development consists two main components:
 \begin{itemize}
-	\item Tools: Tools allow the developers to create models, e.g. UML, EMF, SysML
-	\item Process: The process describes how to use tools in a development process, e.g. SYSMOD, RUP, Y model
+	\item \emph{Tools:} Tools allow the developers to create models, e.g. UML, EMF, SysML
+	\item \emph{Process:} The development process describes how to use the tool e.g. SYSMOD, RUP, Y model
 \end{itemize}
 
-\begin{figure}[!h]
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[
+		start chain=going below,
+		squarednode/.style={
+			rectangle,
+			draw=black,
+			very thick,
+			minimum height=1.5cm,
+			text width=2.5cm,
+			inner sep=2mm,
+			align=center
+		},
+		every loop/.style={
+			looseness=2,
+			text width=2cm
+		}
+		]
+		\node[squarednode] (D1) {Requirements};
+		\node[squarednode] (D2) [below = of D1, xshift = 1cm] {Architecture design};
+		\node[squarednode] (D3) [below = of D2, xshift = 1cm] {Component design};
+		\node[squarednode] (I)  [below = of D3, xshift = 2.5cm] {Implementation};
+		\node[squarednode] (V3) [above = of I , xshift = 2.5cm] {System V\&V};
+		\node[squarednode] (V2) [above = of V3, xshift = 1cm] {Architecture V\&V};
+		\node[squarednode] (V1) [above = of V2, xshift = 1cm] {Unit V\&V};
+
+		\draw[thick,->] (D1) -- (D2) node [midway, left, align=right] {Refine};
+		\draw[thick,->] (D2) -- (D3) node [midway, left, align=right] {Refine};
+		\draw[thick,->] (D3) -- ( I) node [midway, right, align=left] {};
+		\draw[thick,<-] ( I) -- (V3) node [midway, right, align=left] {};
+		\draw[thick,<-] (V3) -- (V2) node [midway, right, align=left] {Use};
+		\draw[thick,<-] (V2) -- (V1) node [midway, right, align=left] {Use};
+
+		\draw[thick,->] ($(D1.east)+(0,.4)$) -- ($(V1.west)+(0,.4)$) node [midway, above] {Transform};
+		\draw[thick,->] ($(D2.east)+(0,.4)$) -- ($(V2.west)+(0,.4)$) node [midway, above] {Transform};
+		\draw[thick,->] ($(D3.east)+(0,.4)$) -- ($(V3.west)+(0,.4)$) node [midway, above] {Transform};
+
+		\draw[thick,<-] ($(D1.east)-(0,.4)$) -- ($(V1.west)-(0,.4)$) node [midway, above] {Test};
+		\draw[thick,<-] ($(D2.east)-(0,.4)$) -- ($(V2.west)-(0,.4)$) node [midway, above] {Test};
+		\draw[thick,<-] ($(D3.east)-(0,.4)$) -- ($(V3.west)-(0,.4)$) node [midway, above] {Test};
+
+	\end{tikzpicture}
+	\caption{Diagram of the V model \citep{MDSD_INTRO}}
+\label{fig:v_model}%
+\end{figure}
+
+
+\begin{figure}
 	\centering
 	\begin{tikzpicture}[
 		start chain=going below,
@@ -46,11 +110,11 @@ Model based software development consists two main components:
 		}
 		]
 		\node[squarednode] (D1) {System\\Design Model};
-		\node[squarednode] (D2) [below = of D1, xshift = .5cm] {Architecture\\Design Model};
-		\node[squarednode] (D3) [below = of D2, xshift = .5cm] {Component\\Design Model};
+		\node[squarednode] (D2) [below = of D1, xshift = .2cm] {Architecture\\Design Model};
+		\node[squarednode] (D3) [below = of D2, xshift = .2cm] {Component\\Design Model};
 		\node[squarednode] (V1) [right = 3cm of D1] {System\\V\&V Model};
-		\node[squarednode] (V2) [below = of V1, xshift = -.5cm]{Architecture\\V\&V Model};
-		\node[squarednode] (V3) [below = of V2, xshift = -.5cm] {Component\\V\&V Model};
+		\node[squarednode] (V2) [below = of V1, xshift = -.2cm]{Architecture\\V\&V Model};
+		\node[squarednode] (V3) [below = of V2, xshift = -.2cm] {Component\\V\&V Model};
 
 		\node[squarednode] (GC) at ($(D3)!0.5!(V3)$) [yshift=-3.5cm, text width=5.5cm] {Design + V\&V Artifacts\\(Source code, Glue code,\\Config. Tables, Test Cases,\\Monitors, Fault Trees, etc.)};
 
@@ -65,63 +129,158 @@ Model based software development consists two main components:
 		\draw[thick,->] (V2) edge [loop right, align=left] node {Formal methods} ();
 		\draw[thick,->] (V3) edge [loop right, align=left] node {Formal methods} ();
 
-		\draw[thick,->] (D1.south) -- (D2.north) node [midway, left, align=right] {Refine};
-		\draw[thick,->] (D2.south) -- (D3.north) node [midway, left, align=right] {Refine};
+		\draw[thick,->] (D1.south) -- (D2.north) node [midway, left, align=right] {Derive};
+		\draw[thick,->] (D2.south) -- (D3.north) node [midway, left, align=right] {Derive};
 		\draw[thick,<-] (V1.south) -- (V2.north) node [midway, right, align=left] {Use};
 		\draw[thick,<-] (V2.south) -- (V3.north) node [midway, right, align=left] {Use};
 
-		\draw[thick,<->] (D1.east) -- (V1.west);
-		\draw[thick,<->] (D2.east) -- (V2.west);
-		\draw[thick,<->] (D3.east) -- (V3.west);
+		\draw[thick,<->] ($(D1.east)+(0,.4)$) -- ($(V1.west)+(0,.4)$) node [midway, above] {Transform};
+		\draw[thick,<->] ($(D2.east)+(0,.4)$) -- ($(V2.west)+(0,.4)$) node [midway, above] {Transform};
+		\draw[thick,<->] ($(D3.east)+(0,.4)$) -- ($(V3.west)+(0,.4)$) node [midway, above] {Transform};
+
+		\draw[thick,<->] ($(D1.east)-(0,.4)$) -- ($(V1.west)-(0,.4)$) node [midway, above] {Test};
+		\draw[thick,<->] ($(D2.east)-(0,.4)$) -- ($(V2.west)-(0,.4)$) node [midway, above] {Test};
+		\draw[thick,<->] ($(D3.east)-(0,.4)$) -- ($(V3.west)-(0,.4)$) node [midway, above] {Test};
 
 	\end{tikzpicture}
 	\caption{Diagram of the Y model \citep{MDSD_INTRO}}
-	\label{fig:y_model}
+\label{fig:y_model}%
 \end{figure}
 
-\subsection{Y model}
+\subsection{Developement models}
 
-The Y model (\cref{fig:y_model}) depicts a basic workflow of model based software development. Every design level has it's own design rules it must conform to. The detailed levels of the system must be traceable to the upper levels. The artifact of the design process is the generated code, and generated test cases.
+\subsubsection{V model}
+
+The V model is a traditional approach in the software design process. The V model starts with \emph{requirements}.
+
+\subsubsection{Y model}
+
+The Y model (\cref{fig:y_model}) depicts a basic workflow of model based software development.
+
+Compared to V model, Y model generates code from the refined component model. The reason behind\ldots
+TODO V model comparsion
+
+Every design level has it's own design rules it must conform to. The detailed levels of the system must be traceable to the upper levels. The artifact of the design process is the generated code, and generated test cases.
 
 \section{Verification techniques}
 \label{sec:verification_techniques}
 
 \subsection{Design time verification}
 
-Design time verification, or formal verification is the analysis of a software in the design process. It's mostly based around model driven system development, where we specify the entire software\,---and hardware if needed---\,as a model. On this model, we can run analysis to ensure that software always behaves according to the specification. Formal verification is a commonly used process in the verification of safety critical systems, or networking protocols.
+Design time verification is the analysis of a software in the design process. It's mostly based around model driven system development, where we specify the entire software\,---and hardware if needed---\,as a model.
+The models engineers produce are engineering models. These models might be more understandable to the designers, but not mathematically correct. A widely used engineering modeling standard is the \uml{}~\cite{UML}.
 
-As mentioned, dynamic behavior takes significant part of a modern software system, even in a safety critical cases. As the availability of sensor networks and advanced communication technologies spreads, distributed components pose a challenge in the verification process.
+It is common to transform the engineering models of the system into mathematically precise constructs. After the transformation, formal verification can be used, which can analyze the behavior of systems in a mathematically precise way.
 
-While formally verifying a software, the software engineer builds a model, and tests this model against given scenarios, searching for incorrect behavior. But the engineer is the responsible for the specification of the scenarios, and not all corner cases are obvious. This method can lead situations, where the system may hide a potential hazard, but because no verification indicated incorrect behavior, we find the system verified.
+Model checking is a technique for verifying finite-state concurrent systems such as sequential circuit designs and communication protocols. It has a number of advantages over traditional approaches that are based on simulation, testing and deductive reasoning. In particular, model checking is automatic and usually quite fast. Also, if the design contains an eror, model checking will produce a counterexample that can be used to pinpoint the source of the error~\cite{mcmillan1993symbolic}.
+
+The spreading of sensor network and various communication technologies results the increasing number of distributed systems. This leads to the growing demand for analysis and verification techniques.
 
 \subsection{Runtime verification}
 
-On behalf of design time verification which is performed while developing the software components, runtime verification checks the systems behavior while operating. This is beneficial because if an erroneous state in the software is not found at the formal verification stage of development, runtime verification techniques can still detect the faulty state of the software, and raise an error. This error can be detected by other components, and\,---if possible\,---resolve this error.
+On behalf of design time verification, which is performed while developing the software components, runtime verification checks the systems behavior according to the system specification during operation.
 
-Runtime verification components can be implemented in form of monitors. The monitors' responsibility is to take signals from a software, and compare it to a simplified model inside of the monitor.
+Runtime verification can be used to detect errors in the system runtime. These errors might originate from:
+\begin{itemize}
+	\item Source code oriented failures, caused by faulty implementation. The monitoring of these faults often have hardware support, like a watchdog timer.
+	\item Requirement based failures, where the system cannot satisfy the system requirements. Embedded monitors can be used to detect requirement violations.
+\end{itemize}
 
-Software components can communicate with the monitor via multiple ways. The communication method implies where the monitor is placed.
-\begin{enumerate}
-	\item Directly by calling the monitors' methods. In this case the monitors' methods are called from the monitored process itself. The monitor is placed in the same compilation unit.
-	      \item\label{item:agent} Remotely by an agent. An embedded agent component is called from the monitored components, or the agent is actively extracting the monitored softwares' state. The agent then forwards this information to the monitor. The monitor can be virtually everywhere.
-\end{enumerate}
+These monitors can detect errors of the following types:
+\begin{itemize}
+	\item Operational errors. These errors comes from the monitored application, e.g.\ implementation failures, hardware failures.
+	\item Configuration errors. These errors caused by configuration error e.g.\ syntactically incorrect configuration file, non valid IP address.
+	\item Environmental errors. Environmental errors come from outside the monitored environment e.g.\ networking, or control systems.
+\end{itemize}
+
+The main purpose of runtime verification is to detect errors, but it can also utilizes techniques to resolve these errors. These monitors called \emph{reactive}. Reactive systems might be:
+\begin{itemize}
+	\item Operational-mode-based. Operational modes are predefined configurations of the system. These configurations can be changed in case of errors e.g.\ failsafe mode.
+	\item Recovery based. The monitor contains actions, and these actions can be fired by errors to restore the system operation.
+\end{itemize}
+
+TODO Valami szép befejezés
+
+\section{Automata}
+\label{sec:automata}
+
+Automata is a mathematical formalism is a widespread mathematical construction in computer science.
+
+An automata is a 5-tuple of $(Q, \Sigma, \delta, q_0, F)$ where the tuple elements are:
+\begin{itemize}
+	\item \emph{Q:} a finite set of states.
+	\item \emph{$\Sigma$:} a finite set of symbols. This set is called as an alphabet for the automaton.
+	\item \emph{$\delta$:} a transition function of $\delta: Q \times \Sigma \rightarrow Q$.
+	\item \emph{$q_0$:} a state, element of Q, where the automata starts initially.
+	\item \emph{F}: a set of states, called acceptor states.
+\end{itemize}
+
+The representation may be varying, but a common illustration of an automata depicted in \cref{fig:example_automata}.
+
+Transitions are depicted by a directed line marked by an element from $\Sigma$. States not necessary, but often marked by a name. In this example automata, the acceptor state is marked by a gray background.
+
+While executing the automata, the automata process symbols from $\Sigma$. Let $q_i$ denote the current active state. For every input symbol $a_i$, if there is a $q_i \in \delta(q_{i-1}, a_i)$ transition, the $q_i$ state (often called active state) becomes the state on the end of the transition originating from $q_{i-1}$.
+
+If the automata reaches an acceptor state, the series of input symbols, called a word, is accepted by the automaton.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture} [
+			auto,
+			every path/.style = {
+				thick,
+				->
+			},
+		]
+		\node[circle, very thick, draw=black, minimum size=8mm] (A) [] {A};
+		\node[circle, very thick, draw=black, minimum size=8mm] (B) [right = 2.5cm of A] {B};
+		\node[circle, very thick, draw=black, minimum size=8mm, fill=black!10] (C) [right = 3cm of B] {C};
+
+		\draw (A) ++(-1, 1) -- (A);
+		\draw (A) edge [bend left]
+			node [sloped, midway, above] {a} (B);
+		\draw (A) edge [bend right]
+			node [sloped, midway, below] {b} (B);
+		\draw (B) edge [bend left]
+			node [sloped, midway, above] {c} (C);
+
+	\end{tikzpicture}
+	\caption{An automata representation}
+\label{fig:example_automata}
+\end{figure}
+
+\subsection{Timed automata}
+
+
 
 \section{Complex event processing}
 
-Complex event processing (\cep) is a set of techniques and tools to help us understand and control event-driven information systems \citep{Luckham:2001:PEI:515781}.
+Complex event processing (\cep{}) is a set of techniques and tools to help us understand and control event-driven information systems \citep{Luckham:2001:PEI:515781}.
 
-Complex event processing frameworks exists because of the problem of processing large amount of events coming inside into an application. While its easy to search  very simple patterns inside an incoming on--line stream of information, e.g. the same thing happening $x$ times after each other, at the moment the developer wants to find more complex, maybe temporal pattern in this incoming information, this problems grows into a nontrivial one.
+Complex event processing frameworks are practical solutions for processing large amount of events by pattern matching.
 
-For example take an example from the financial world. A bank wants to avoid fraud with it's clients credit card. The bank receives a huge amount of payment information daily, and wants to filter
+Traditionally complex event processors are complex frameworks like databases, and modeling frameworks. The aim of this thesis to generate small, but effective code, and run it on embedded environments, where it's impossible to run a full \cep{} software stack.
+
+In a typical \cep{} use case, the developer writes patterns, consisting of events of the input or other patterns (\cref{subsec:cep_patterns}).
+
+While its relatively easy to match simple patterns against the incoming on-line stream of information, the complexity of the problem significantly increases with:
 \begin{itemize}
-	\item The same person's credit card
-	\item With some temporal property e.g. in a day
-	\item Used somewhere outside from the country the last 2 payments was done
+	\item the usage of patterns inside other patterns
+	\item parallel capture of patterns
+	\item temporal properties
+	\item parametrization
 \end{itemize}
 
-With the capability to find such specific occasions, complex event processor is great for monitoring purposes. This thesis will show the usage of this monitoring capability with very limited resources.
+For instance, in finance fraud detection is a common use-case for applying \cep{}. The bank receives a huge amount of payment information daily, and wants to filter out cases, where frauds may happened.
+\begin{itemize}
+	\item The same person's credit card
+	\item With some temporal property e.g.\ in a day
+	\item Used somewhere outside from the country the last 2 payments were done
+\end{itemize}
 
-The basic workflow for monitoring with \cep is illustrated in \cref{fig:cep_monitoring}. If the developement is model based, according to the Y-model, from the high level specification one can generate complex event processor patterns (\cref{subsec:cep_patterns}). After compilation, or interpretation of the patterns, the monitor can be executed by a \cep engine (\cref{subsec:cep_engine}). The generated monitor is then capable of signaling the violation of the high level specification.
+With the capability to find the occurrences of such events, complex event processing is usable to monitor the behavior of the system.
+
+The basic workflow of a \cep{}-based monitoring framework is illustrated in \cref{fig:cep_monitoring}. If the developement is model based, according to the Y-model, from the high level specification one can generate complex event patterns (\cref{subsec:cep_patterns}). After compilation, or interpretation of the patterns, the monitor can be implemented by a \cep{} engine (\cref{subsec:cep_engine}). The generated monitor is then able to indicate the violation of the high level specification.
 
 \begin{figure}
 	\centering
@@ -145,38 +304,40 @@ The basic workflow for monitoring with \cep is illustrated in \cref{fig:cep_moni
 		\draw[thick, ->] (C) -- (D);
 
 	\end{tikzpicture}
-	\caption{A \cep based monitoring solution}
-	\label{fig:cep_monitoring}
+	\caption{A \cep{} based monitoring solution}
+\label{fig:cep_monitoring}
 \end{figure}
+
+\noindent In the following sections, we overview the basic definitions of the CEP domain.
 
 \subsection{Event}
 \label{subsec:cep_event}
 
 An event is an instance of an event type, which is distinguished by an unique name.
-Event is the basic and most important aspect of a complex event processor. Events can be classified into two main categories:
+Event is the input of a complex event processor. Events can be classified into two main categories:
 \begin{itemize}
-	\item Atomic event. These events marks a point in time, and cannot be broken down to other events.
-	\item Complex event. A complex event can be caused by some pattern consisting atomic, and other complex events.
+	\item Atomic event. An event the indicator of a change in the environment which has to be processed. It refers to a single point of time, and it cannot be broken down into other events.
+	\item Complex event. Complex events are built from other events representing a complex temporal pattern of one or more events in time.
 \end{itemize}
 
 \needspace{10em}
 \subsection{Event streams}
 \label{subsec:cep_eventstream}
 \label{subsection:event_streams}
-The input of a \cep are streams of atomic events. These atomic events can come from various sources, as follows.
+The input of a \cep{} engine are streams of atomic events. Atomic events represent various information from the environment:
 \begin{enumerate}
-	\item Direct event stream handling. This is an imperative approach, because the events pushed programmatically from code through an API.
+	\item Direct event stream. This is an imperative approach, because the events pushed programmatically from code through an \textls{API}.
 
 	\item Model change events. The application have an underlying model and framework, and it can notify the event processor in case of various changes (deletion, insertion, update) of the model.\label{item:model}
 
-	\item Databases. This is a special case of \cref{item:model}, where the model is not implemented in the application, but stored in a database.
+	\item Databases. This is a special case of \cref{item:model}, where the events come from a database, marking the changes of it. The database may contain the model itself, or any data represented in a completely different structure.
 \end{enumerate}
 \vspace{1ex}
-If an \cep supports it, it is possible to mix input streams, and rules can interconnect these event sources.
+If a \cep{} supports it, it is possible to mix input streams, and rules can interconnect the event sources.
 
 \subsection{Patterns}
 \label{subsec:cep_patterns}
-Event processors provides formalisms to describe patterns.
+Event processors provide formalisms to describe patterns.
 
 The complex nature of the rules comes from the usage of the reference of other patterns. One pattern might depend on the activation of another pattern.
 
@@ -185,7 +346,7 @@ With this functionality, one can build hierarchical system of pattern. Instead o
 \subsection{Engine}
 \label{subsec:cep_engine}
 
-A \cep is built around it's execution engine. The engine accepts the input stream(s), and output is the matches of the patterns. In monitoring situations the output of engine is the event of an erroneous state of the monitored process (\cref{fig:cep_monitoring_event_flow}).
+A \cep{} is built around it's execution engine. The engine accepts input streams, and the output are the matchings of the patterns. In monitoring situations the output of an engine is the event of an erroneous state of the monitored process (\cref{fig:cep_monitoring_event_flow}).
 
 \begin{figure}
 	\centering
@@ -206,28 +367,24 @@ A \cep is built around it's execution engine. The engine accepts the input strea
 		\draw[thick, ->] (A.east) -- (D);
 		\draw[thick, ->] (B.east) -- (D);
 		\draw[thick, ->] (C.east) -- (D);
-		\draw[thick, ->] (D.east) -- ++(3,0) node [above, midway] {Error signals};
+		\draw[thick, ->] (D.east) -- ++(4,0) node [above, midway] {Output/Observations};
 
-		\draw[thick, ->] (5,0.5) -- ++(2,0) node [pos = 1.5] {Event flow};
+		\draw[thick, ->] (6.5,0.5) -- ++(2,0) node [pos = 1.5] {Event flow};
 
 	\end{tikzpicture}
-	\caption{Event flow in a \cep based monitor}
-	\label{fig:cep_monitoring_event_flow}
+	\caption{Event flow in a \cep{} based monitor}
+\label{fig:cep_monitoring_event_flow}
 \end{figure}
-
-\subsection{Conclusion}
-
-Traditionally complex event processors are complex frameworks like databases, and modeling frameworks. The aim of this thesis to generate small, but effective code, and run it on embedded environments, where it's impossible to run a full \cep software stack.
 
 \section{Real-time systems}
 
-Real-time systems have some temporal constraints (deadline), which the system must satisfy. In a real-time system the correctness of behavior not only depend on the control logic, but on the temporal properties of it. These constrains often focused on the response time of the system in case of events.
+Real-time systems have some temporal constraints (deadline), which the system must satisfy. In a real-time system the correctness of behavior not only depend on the control logic, but on temporal properties as well. These constrains often focused on the response time of the system in case of events.
 
 We can divide real-time systems into two main category: hard and soft real-time.
 
 \subsubsection{Hard real-time}
 
-Hard realtime systems have precisely defined deadlines which the system must suffice. If the system hit a deadline, it is considered a failure. An example of a hard-realtime system is an airbag controller inside a car. After a collision, there is a very narrow time band where the airbag must be deployed. A hard-realtime system must have some proof they can deterministically handle these situations without hitting a deadline.
+Hard real-time systems have precisely defined deadlines which the system must suffice. If the system misses a deadline, it is considered a failure. An example of a hard real-time system is an airbag controller inside a car. After a collision, there is a very narrow time window where the airbag must be inflated. A hard real-time system must have some proof they can deterministically handle these situations without missing a deadline.
 
 \subsubsection{Soft real-time}
 
@@ -235,15 +392,16 @@ Soft real-time differ from hard-realtime system in the way they stay correct if 
 
 \subsection{Realtime operating systems}
 
-The type of an operating system is defined by how the scheduler decides which program to run and when. For example, the scheduler used in a multi user operating system (such as Unix) will ensure each user gets a fair amount of the processing time. As another example, the scheduler in a desktop operating system (such as Windows) will try and ensure the computer remains responsive to its user.
+The type of an operating system is defined by how the scheduler decides which program to run and when to run it. For example, the scheduler used in a multi-user operating system (such as Unix) will ensure each user gets a fair amount of the processing time. As another example, the scheduler in a desktop operating system (such as Windows) will try to ensure the computer remains responsive.
 
 The scheduler in a \emph{Real Time Operating System} (\rtos) is designed to provide a predictable\,--normally described as deterministic--\,execution pattern. This is particularly of interest to embedded systems as embedded systems often have real time requirements. A real time requirements is one that specifies that the embedded system must respond to a certain event within a strictly defined time (the deadline). A guarantee to meet real time requirements can only be made if the behavior of the operating system's scheduler can be predicted (and is therefore deterministic).\citep{RTOS}
 
-Most of the safety oriented systems based around realtime operating systems. It is important to understand realtime operating systems exists to provide determinism, and not additional performance. With these response guarantees, the software engineer can be sure the incoming interrupt will be served, and the software components responsible for the processing will get \cpu time between the guaranteed limits.
+Most of the safety-oriented systems are based on realtime operating systems. It is important to understand realtime operating systems exists to provide determinism, and not additional performance. With these response guarantees, the software engineer can be sure the incoming interrupt will be served, and the software components responsible for the processing will get \cpu{} time between the guaranteed limits.
 
 \section{Mission critical systems}
+\label{sec:mission_critical_system}
 
-A mission critical system is which failure can cause severe financial loss, natural disaster, or loss of human lives. Most of the time mission critical systems utilizes hard-realtime systems. Association between mission critical systems, and hard-realtime is common, but there are counterexamples:
+A system is considered to be mission-critical, if system failure can cause severe financial loss, natural disaster, or loss of human lives. Most of the time mission critical systems utilizes hard-realtime systems. Association between mission critical, and hard-realtime is common, but there are counterexamples:
 
 One example is a bank transaction software. A transaction execution software does not need to execute transactions in real-time, but if a transaction does not executed correctly, it can mean serious financial loss.
 
@@ -251,15 +409,15 @@ Another example is a printer head. A printer head is a hard real time component,
 
 \section{Domain specific language}
 
-A domain-specific language (\dsl) is a programming language or executable specification language that offers, through appropriate notations and abstractions, expressive power focused on, and usually restricted to, a particular problem domain \citep{van2000domain}.
+A domain-specific language (\dsl{}) is a programming language or executable specification language that offers, through appropriate notations and abstractions, expressive power focused on, and usually restricted to, a particular problem domain \citep{van2000domain}.
 
-\dsl{}s are useful, because the language's designer completely in control of the language, and the constraints. These constrains can help the designer get real-time feedback about the correctness of the code written in \dsl. For example an automaton definition \dsl can support design time checking states of an automaton, and provide feedback to the designer which states are unreachable.
+\dsl{}s are useful, because the language's designer completely in control of the language, and the constraints. These constrains can help the designer get real-time feedback about the correctness of the code written in \dsl. For example an automaton definition \dsl{} can support design time checking states of an automaton, and provide feedback to the designer which states are unreachable.
 
 \section{Eclipse}
 
-Eclipse is an open integrated development environment (\textls{IDE}) actively developed since 2001. Eclipse is the main platform of modeling tools, e.g. \emf, \textls{AUTOSAR}, \textls{UML}, \textls{SysML}.
+Eclipse is an open source integrated development environment (\textls{IDE}) actively developed since 2001. Eclipse is the main platform of modeling tools implementing industry wide standards e.g. \emf, \textls{AUTOSAR}, \textls{UML}, \textls{SysML}.
 
-Eclipse achieve this modularity with it's radical usage of plug-ins. The entire \textls{IDE} is built around plug-ins. A representative example is the Eclipse \textls{IDE} this thesis was developed on, contains 1653 plug-ins itself.
+Eclipse achieve this modularity with it's radical usage of plug-ins. The entire \textls{IDE} is built around plug-ins.
 
 To make such a distributed plug-in network usable, Eclipse utilizes the Open Services Gateway initiative (\textls{OSGi}) framework. The \textls{OSGi} framework uses the extra metadata bundled with Java packages to handle dependency requirements inside the runtime, and to interconnect the plug-ins with each other.
 
@@ -267,10 +425,9 @@ To make such a distributed plug-in network usable, Eclipse utilizes the Open Ser
 
 The Eclipse Modelign Framework (\emf) is a well development modeling framework to support model creation for model driven development.
 
-Many frameworks, like the \viatra framework. Such frameworks can use the notification support coming out of the box with \emf to support advanced incremential features.
-
+Many frameworks, like the \viatra{} framework. Such frameworks can use the notification support coming out of the box with \emf{} to support advanced incremential features:
 \begin{itemize}
-	\item Visual model editing. The \emf editor gives a tree based, or completely cal editing of it's models.
+	\item Visual model editing. The \emf{} editor gives a tree based, or completely cal editing of it's models.
 	\item Notification support for change events.
 	\item Code generation features.
 	      \begin{itemize}

@@ -7,16 +7,16 @@ This chapter will introduce the basics of code generation, and depict the proces
 
 \section{Introduction}
 
-Code generation is the process of transformation of a domain-specific language to another domain-specific language. The transformation's input and output type can be different, the main combinations are the following.
+Code generation is the process of transformation of a domain-specific language to another domain-specific language. The transformation's input and output type can be different, the main combinations are the following:
 \begin{itemize}
-	\item \mtt: Model to text generation. This generation takes a model, and generate textual artifact from it. The generated text can be source code, documentation, or any textual artifact. An example for \mtm generation is the generation of JavaDoc. The input is the AST of the Java code, and the output is the textual documentation of the code.
-	\item \mtc: Model to code generation. \mtc is a special case of \mtt, where the artifact is compilable, or executable code from a model. One use case of \mtc generation is the final step of a model driven software development.
-	\item \mtm: Model to model generation. \mtm generators take a model, and transform it to another model.
+	\item \mtt{}: Model to text generation. This generation takes a model, and generate textual artifact from it. The generated text can be source code, documentation, or any textual artifact. An example for \mtm{} generation is the generation of JavaDoc. The input is the AST of the Java code, and the output is the textual documentation of the code.
+	\item \mtc{}: Model to code generation. \mtc{} is a special case of \mtt{}, where the artifact is compilable, or executable code from a model. One use case of \mtc{} generation is the final step of a model driven software development.
+	\item \mtm{}: Model to model generation. \mtm{} generators take a model, and transform it to another model.
 \end{itemize}
 
 \cref{fig:model_transformations} depict an example of these transformations, where the source and result of the generation is textual. This textual source can be any programming language like Java, \cpp{}. \cref{fig:model_transformation_cpp} depict a situation where the developer create a textual representation of a finite automaton (FA) in a given formalism (Code$_\text{FA}$).
 
-This formalism can be converted into a model (Model$_\text{FA}$). With \mtm transformation, the model can be converted into a model (Model$_\text{\cpp{}}$), which is applicable of the generation of code output (Model$_\text{FA}$).
+This formalism can be converted into a model (Model$_\text{FA}$). With \mtm{} transformation, the model can be converted into a model (Model$_\text{\cpp{}}$), which is applicable of the generation of code output (Model$_\text{FA}$).
 
 This example converts from a domain specific language of finite automation to the domain specific language of an imperative programming language.
 
@@ -35,7 +35,7 @@ This example converts from a domain specific language of finite automation to th
 		\draw [thick, <->] (M2) -- (T2) node [midway, right] {M2T/M2C};
 	\end{tikzpicture}
 	\caption{Usage of code generation from text to text}
-	\label{fig:model_transformations}
+\label{fig:model_transformations}
 \end{figure}
 
 \begin{figure}
@@ -53,7 +53,7 @@ This example converts from a domain specific language of finite automation to th
 		\draw [thick, ->] (M2) -- (T2) node [midway, right] {\mtt};
 	\end{tikzpicture}
 	\caption{Workflow of}
-	\label{fig:model_transformation_cpp}
+\label{fig:model_transformation_cpp}
 \end{figure}
 
 \section{Code generator structure}
@@ -81,7 +81,7 @@ Dedicated code generators described as generators where the generator itself are
 		\draw [thick, double equal sign distance, <-] (DCG.north) -- +(0,1) node [pos=0.65, right, xshift=1mm] {Parameters};
 	\end{tikzpicture}
 	\caption{Dedicated code generator structure}
-	\label{fig:dedicated_code_generator}
+\label{fig:dedicated_code_generator}
 \end{figure}
 
 \subsection{Template based generator}
@@ -113,7 +113,7 @@ Next to the model, the designer provides a template. This template combined with
 
 	\end{tikzpicture}
 	\caption{Template code generator structure}
-	\label{fig:template_code_generator}
+\label{fig:template_code_generator}
 \end{figure}
 
 One of the proven template based generator is the Xtend language. Before getting into Xtend, the following sections will represent the technologies Xtend is built around.
@@ -124,7 +124,7 @@ One of the proven template based generator is the Xtend language. Before getting
 
 \textls{ANTLR} (ANother Tool for Language Recognition) is a powerful parser generator for reading, processing, executing, or translating structured text or binary files. It's widely used to build languages, tools, and frameworks. From a grammar, ANTLR generates a parser that can build and walk parse trees \citep{ANTLR}.
 
-\textls{ANTLR} is a very powerful framework, not just because it's expressiveness, but the support of runtime languages it can generate parsers to. \textls{ANTLR} supported runtime languages are.
+\textls{ANTLR} is a very powerful framework, not just because it's expressiveness, but the support of runtime languages it can generate parsers to. \textls{ANTLR} supported runtime languages are:
 \begin{itemize}
 	\item \textls{C\#}
 	\item Java
@@ -137,13 +137,13 @@ Besides the runtime languages, various other languages are implemented in form o
 
 \subsection{Xtext}
 
-Xtext is a frameworks built around a subset of \textls{ANTLR}. The reason behind the restriction of \textls{ANTLR} language's expressiveness  is to make it compatible with Eclipse technologies like \emf, which is the backbone of Xtext. The language written in Xtext automatically translates to an \emf metamodel, which serves as an abstract syntax tree (\textls{AST}) metamodel. As the developer writes a DSL previously defined by an Xtext language, the corresponding \emf metamodel is instantiated
+Xtext is a frameworks built around a subset of \textls{ANTLR}. The reason behind the restriction of \textls{ANTLR} language's expressiveness  is to make it compatible with Eclipse technologies like \emf{}, which is the backbone of Xtext. The language written in Xtext automatically translates to an \emf{} metamodel, which serves as an abstract syntax tree (\textls{AST}) metamodel. As the developer writes a DSL previously defined by an Xtext language, the corresponding \emf{} metamodel is instantiated
 
 Xtext, like EMF integrates itself into Eclipse. Xtext languages generates editors with code completion support, and with other technologies like Sirius, graphical editing features can be implemented without coding.
 
 \subsection{Xtend}
 
-Xtend is an Xtext languange. Xtend is a language specialized in \mtt code generation, but can be used as a mixed functional-imperative object-oriented programming language. The following sections will depict the functionalities useful for \mtt generation.
+Xtend is an Xtext languange. Xtend is a language specialized in \mtt{} code generation, but can be used as a mixed functional-imperative object-oriented programming language. The following sections will depict the functionalities useful for \mtt{} generation.
 
 Xtend is compiled to Java source code, therefore the code can be reviewed with tools specialized to Java.
 
@@ -155,27 +155,27 @@ While \textls{C\#} uses a special syntax to mark the extension methods (the firs
 
 \subsubsection{Template expressions}
 
-From the code generating point of view, template expressions are the most useful feature of the language. With template expressions, one can write strings which serves as the generation templates. Template expressions defined by triple single quotes (\verb+'''+). Inside the template the guillemets (\verb+«»+) act as an escape character. Inside these guillemets one can write Xtend code, e.g. access iterator, or local variables.
+From the code generating point of view, template expressions are the most useful feature of the language. With template expressions, one can write strings which serves as the generation templates. Template expressions defined by triple single quotes (\verb+'''+). Inside the template the guillemets (\verb+«»+) act as an escape character. Inside these guillemets one can write Xtend code, e.g.\ access iterator, or local variables.
 
-An example of template expression usage presented in \cref{fig:template_expression_example}. With the usage of template expressions, information of a model can be injected into the template, according to the description of \cref{subsec:template_based_generator}.
+An example of template expression usage presented in \cref{lst:template_expression_example}. With the usage of template expressions, information of a model can be injected into the template, according to the description of \cref{subsec:template_based_generator}.
 
-\begin{figure}
-	\centering
-	\begin{lstlisting}[style=xtext]
+\begin{lstlisting}[
+	float,
+	caption={Sample template expression in Xtend},
+	label=lst:template_expression_example,
+	language={Xtend}
+]
 var acceptCode = '''
 	void Automaton_[gl]a.name[gr]::accept() {
 		// Implement accepting action here
 		return;
 	}
 '''
-	\end{lstlisting}
-	\caption{Template expression example}
-	\label{fig:template_expression_example}
-\end{figure}
+\end{lstlisting}
 
 \subsubsection{Template keywords}
 
-The template syntax is expanded with keywords including
+The template syntax is expanded with keywords including:
 \begin{itemize}
 	\item FOR, and ENDFOR
 	\item IF, and ENDIF
@@ -184,7 +184,7 @@ which can be used inside guillemets. These syntaxes helps the generation of list
 
 \subsection{\viatraq/\incq}
 
-\viatraq \citep{ujhelyi2015emf} is an incremental graph pattern matcher over the \emf framework. In the year 2016, the project merged with the \viatra framework, and \incq was renamed to \viatraq.
+\viatraq{} \citep{ujhelyi2015emf} is an incremental graph pattern matcher over the \emf{} framework. In the year 2016, the project merged with the \viatra{} framework, and \incq{} was renamed to \viatraq.
 
 Code generation, model transformation, checking well formed constraints are problems which requires model traversal. One traditional technique of model traversal is the visitor pattern \citep{gamma1995design}. While the visitor patterns is a good approach, but it lacks scalability and support of incrementality.
 
@@ -192,13 +192,16 @@ Code generation, model transformation, checking well formed constraints are prob
 
 Imperative approaches might be feasible in smaller models and simple model structure, but the design process of a model traversal is a repetitive task resulting in a boilerplate code with high cyclomatic complexity.
 
-\viatraq solved this problem by utilizing \rete networks. The approach of \rete networks and how the required information if selected is very alike of relational calculus. One big added feature of the language is the support of transitive closure.
+\viatraq{} solved this problem by utilizing \rete{} networks. The approach of \rete{} networks and how the required information if selected is very alike of relational calculus. One big added feature of the language is the support of transitive closure.
 
-The \dsl built for \viatraq is an Xtext based language with strong code-completion features deeply integrated into Eclipse and \emf. This \dsl supports writing queries in a declarative way, resulting in more effective design workflow and reduced debugging times.
+The \dsl{} built for \viatraq{} is an Xtext based language with strong code-completion features deeply integrated into Eclipse and \emf{}. This \dsl{} supports writing queries in a declarative way, resulting in more effective design workflow and reduced debugging times.
 
-\begin{figure}
-	\centering
-	\begin{lstlisting}[style=viatraq]
+\begin{lstlisting}[
+	float,
+	caption={Sample Viatra query pattern},
+	label=lst:viatraq_example_pattern,
+	language={ViatraQ}
+]
 pattern EpsilonTransition(a: Automaton) {
 	Automaton.states.incomingTransitions(a, t);
 	EpsilonTransition(t);
@@ -206,11 +209,12 @@ pattern EpsilonTransition(a: Automaton) {
 	Automaton.states.outgoingTransitions(a, t);
 	EpsilonTransition(t);
 }
-	\end{lstlisting}
-	\caption{Example of an \viatraq graph pattern}
-	\label{fig:viatraq_example_pattern}
-\end{figure}
+\end{lstlisting}
 
 \subsubsection{Runtime}
 
-While the design process workflow is coupled to Eclipse, the \viatraq runtime can be used in plain Java applications, therefore the platforms are not restricted to Eclipse installations.
+While the design process workflow is coupled to Eclipse, the \viatraq{} runtime can be used in plain Java applications, therefore the platforms are not restricted to Eclipse installations.
+
+\section{Generation of monitors}
+
+This section will introduce the metamodel of the automaton used to generate code, and the code generation process itself.

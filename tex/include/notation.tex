@@ -15,38 +15,41 @@
 %
 % Abbreviations
 %
-\newcommand*{\osx}{\textls{OSX}\xspace}
-
-\newcommand*{\emf}{\textls{EMF}\xspace}
-\newcommand*{\rete}{\textls{RETE}\xspace}
-\newcommand*{\viatra}{\textls{VIATRA}\xspace}
-\newcommand*{\incq}{\textls{\emf-Query}\xspace}
-\newcommand*{\viatraq}{\textls{VIATRA-Query}\xspace}
-\newcommand*{\dsl}{\textls{DSL}\xspace}
+\newcommand*{\os}{\textls{OS}}
+\newcommand*{\osx}{\textls{OSX}}
+\newcommand*{\api}{\textls{API}}
+\newcommand*{\uml}{\textls{UML}}
+\newcommand*{\emf}{\textls{EMF}}
+\newcommand*{\rete}{\textls{RETE}}
+\newcommand*{\viatra}{\textls{VIATRA}}
+\newcommand*{\viatrac}{\textls{\viatra{}-CEP}}
+\newcommand*{\incq}{\textls{\emf{}-Query}}
+\newcommand*{\viatraq}{\textls{VIATRA-Query}}
+\newcommand*{\dsl}{\textls{DSL}}
 \newcommand*{\cpl}[1]{\textls{C#1}}
 \newcommand*{\cpp}[1]{\textls{C\texttt{++}#1}}
+\newcommand*{\elf}{\textls{ELF}}
+\newcommand*{\ti}{\textls{TI}}
+\newcommand*{\cpu}{\textls{CPU}}
+\newcommand*{\pru}{\textls{PRU}}
+\newcommand*{\pruss}{\textls{PRU-ICSS}}
+\newcommand*{\isc}{\textls{I$^2$C}}
+\newcommand*{\cu}{\textls{CU}}
+\newcommand*{\gpio}{\textls{GPIO}}
+\newcommand*{\cep}{\textls{CEP}}
+\newcommand*{\iot}{\textls{IoT}}
+\newcommand*{\pwm}{\textls{PWM}}
+\newcommand*{\spi}{\textls{SPI}}
+\newcommand*{\rtos}{\textls{RTOS}}
+\newcommand*{\iram}{\textls{IRAM}}
+\newcommand*{\dram}{\textls{DRAM}}
 
-
-\newcommand*{\elf}{\textls{ELF}\xspace}
-\newcommand*{\ti}{\textls{TI}\xspace}
-\newcommand*{\cpu}{\textls{CPU}\xspace}
-\newcommand*{\pru}{\textls{PRU}\xspace}
-\newcommand*{\pruss}{\textls{PRU--ICSS}\xspace}
-\newcommand*{\isc}{\textls{I$^2$C}\xspace}
-\newcommand*{\cu}{\textls{CU}\xspace}
-\newcommand*{\gpio}{\textls{GPIO}\xspace}
-\newcommand*{\cep}{\textls{CEP}\xspace}
-\newcommand*{\iot}{\textls{IoT}\xspace}
-\newcommand*{\pwm}{\textls{PWM}\xspace}
-\newcommand*{\spi}{\textls{SPI}\xspace}
-\newcommand*{\rtos}{\textls{RTOS}\xspace}
-
-\newcommand*{\mtt}{\textls{M2T}\xspace}
-\newcommand*{\mtc}{\textls{M2C}\xspace}
-\newcommand*{\ttm}{\textls{T2M}\xspace}
-\newcommand*{\ctm}{\textls{C2M}\xspace}
-\newcommand*{\mtm}{\textls{M2M}\xspace}
-\newcommand*{\abstst}{\textls{AST}\xspace}
+\newcommand*{\mtt}{\textls{M2T}}
+\newcommand*{\mtc}{\textls{M2C}}
+\newcommand*{\ttm}{\textls{T2M}}
+\newcommand*{\ctm}{\textls{C2M}}
+\newcommand*{\mtm}{\textls{M2M}}
+\newcommand*{\abstst}{\textls{AST}}
 
 %
 %
@@ -70,19 +73,3 @@
 \newcommand*{\ZZ}{\mathbb{Z}} % Whole numbers
 \newcommand*{\NN}{\mathbb{N}} % Naturals
 \newcommand*{\NNpos}{\NN^{+}} % Positive whole numbers
-
-%
-% UML
-%
-
-\tikzset{
-  uml class/.style={draw, tdk highlight, inner xsep=5pt,font=\strut\ttfamily},
-  uml not a class/.style={font=\strut},
-  uml lollipop/.style={draw,circle,tdk highlight,inner sep=3pt},
-  uml inheritance/.style={draw,{Triangle[open,fill=white,angle=90:8pt]}-{}}
-}
-
-\newcommand{\umlLollipop}[3][4em,2em]{
-  \path (#2) edge ++(#1);
-  \node at ($(#2)+(#1)$) [uml lollipop,label=0:{#3}] {};
-}
