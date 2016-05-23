@@ -217,4 +217,109 @@ While the design process workflow is coupled to Eclipse, the \viatraq{} runtime 
 
 \section{Generation of monitors}
 
-This section will introduce the metamodel of the automaton used to generate code, and the code generation process itself.
+This section describe the code generator implemented for the metamodel described in \cref{sec:metamodel}.
+
+As mentioned before, generic simulation is one tool to execute automaton, but it's resource needs might exceed what is the hardware capable of. In this case, \mtc{} code generation is a good tool, which can be used to generate specific, efficient code.
+
+To maximize the flexibility of the generator, the code generation uses Xtend, as a generator language. With Xtend, and related technologies like \viatraq{}, a template-based code generator can be created. While Xtend can be used to generate code with template expressions, the language itself became a general purpose language, and instead of Java, the entire project is developed in Xtend.
+
+The code generator is implemented as Eclipse plugins. This decision is based on the fact the \viatrac{} project uses Eclipse as a platform. With the correct structure, this code generator can contribute to this. This thesis will not cover the integration process, but it's definitely a future goal.
+
+\subsection{Project structure}
+
+The main project structure is the following:
+\begin{itemize}
+	\item \emph{hu.bme.mit.inf.cepgen.common:} While the current focus is on \cpl/\cpp{} language generation, the generic approach is to support other languages, and platforms. To help further development, this package provides abstract classes, and interfaces. With this abstraction level, further platforms and languages can be added with low impact on existing implementation.
+	\item \emph{hu.bme.mit.inf.cepgen.query:} This project contains all the \viatraq{} queries. These queries are placed in a separate project, to provide reusability. These patterns provides generic automaton related queries.
+	\item \emph{hu.bme.mit.inf.cepgen.pru:} This project is a concrete generator. This generator is for the \pru{} of the BeagleBone Black (\cref{ch:pru}).
+\end{itemize}
+
+\subsection{Generation workflow}
+
+The monitors are generated from an in-memory instance model of the automaton described in \cref{sec:metamodel}. This instance model is validated against current compiler constraints. The only constraint currently is the existence of epsilon transitions. If an epsilon transition is present in the automata, it means the automaton is non-deterministic. Because the code generator can only use deterministic automaton, it's a hard constraint.
+
+After validation, the symbolic states generated to a \cpp{} enumeration. The reason why the symbolic events not contained in automatons is because the complex event processing nature. Defined events in the regular expression language describing patterns are defined globally. As a consequence, in the automaton these event types are global, shared between automatons. The used template is listed in \cref{lst:event_enumeration_template}.
+
+As mentioned, with Xtend template expression features, templates are quite readable, and with the \texttt{SEPARATOR} attribute in \texttt{FOR}, it's very easy to add separation between items, instead of an error prone, boilerplate solution.
+
+\begin{lstlisting}[
+	float,
+	caption={Template used to generate the event enumeration},
+	label=lst:event_enumeration_template,
+	language={Xtend}
+]
+#pragma once
+
+typedef enum {
+	«FOR sie : cep.symbolicEvents SEPARATOR ','»
+		EVENT_«sie.name»
+	«ENDFOR»
+} Event;
+\end{lstlisting}
+
+\needspace{5ex}
+After generating the event enumerations, each automata can be processed separately. One very key point of \cpp{} code generation for the \pru{} is static behavior. Because the \pru{} is so limited in resources, the executor cannot having dynamic allocations. Automaton itself can be executed quite statically. The control structure which is efficient for the execution of an automata is the switch-case control structure. The following happens, when an event is handled:
+\begin{enumerate}
+	\item A switch-case with the input event parameter.
+	\item An embedded switch-case inside each event cases, with the condition checking the currently active state. If a case matches to the stored currently active state, it means a transition can be fired. Before jumping to the next state, there might be other side effects of the transition.
+	\begin{itemize}
+		\item A transition might reset, or set a timer.
+		\item The state which the transition leads might be an acceptor state, meaning we must specially handle this transition.
+	\end{itemize}
+	\item Set the active state to the state on the other end of the transition.
+\end{enumerate}
+
+By using \viatraq{} patterns, relations can be easily queried from a model, which is not present in the metamodel as references. An example is \cref{viatraq_example}. This query can collect out transitions, which is guarded by a specific symbolic event.
+
+\begin{lstlisting}[
+	float,
+	caption={An example query of selection by symbolic event},
+	label=lst:viatraq_example,
+	language={ViatraQ}
+]
+pattern InputStateTransition(a: Automaton, sie : SymbolicInputEvent, t: Transition) {
+	Automaton(a);
+	Automaton.states(a, s);
+
+	State(s);
+	State.outgoingTransitions(s, t);
+
+	Transition(t);
+	Transition.eventguard.type(t, sie);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[
+	float,
+	caption={Partial code of the automata generator template},
+	label=lst:automata_handle_code,
+	language={Xtend},
+	basicstyle=\ttfamily\small
+]
+void Automaton_«a.name»::handleEvent(Event inputEvent) {
+	switch (inputEvent) {
+		«FOR sie : cep.symbolicEvents»
+			case (EVENT_«sie.name»):
+				switch (this->activeState) {
+					«FOR t : InputStateTransitionMatcher.on(qe).getAllValuesOft(a, sie).sortBy[t | t.from.id]»
+						case «t.from.id»:
+							«FOR setAction : SetTimerActionMatcher.on(qe).getAllValuesOfsta(t)»
+								setTimer(«timer2index.get(setAction.timer)», «setAction.toValue»);
+							«ENDFOR»
+							«FOR setAction : ResetTimerActionMatcher.on(qe).getAllValuesOfrta(t)»
+								resetTimer(«timer2index.get(setAction.timer)»);
+							«ENDFOR»
+							setActiveState(«t.to.id»);
+							«IF t.to.acceptor»
+							accept();
+							«ENDIF»
+							return;
+					«ENDFOR»
+				}
+				return;
+		«ENDFOR»
+	}
+}
+\end{lstlisting}
+
+With the collection of transitions having same symbolic events, the executable \cpp{} code can be generated. In the first solution, the template expressions called other template expressions, but this resulted in a non-sequential, hardly readable code. After this conclusion, the methods were moved into the main template code resulting in a monolithic template expression, which is far more readable.
