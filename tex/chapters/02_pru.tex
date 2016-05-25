@@ -113,7 +113,7 @@ Additionally the coprocessor can use some of the resources of the host \cpu{} wh
 
 \subsection{AM335x processor family}
 
-The AM335x is one of the Texas Intruments' ARM Cortex-A8 based processor family~\citep{AM335x}. This thesis will focus on the AM3358 processor, because the BeagleBone Black \citep{BBB} has this \cpu. The BeagleBone Black is the reference system this case study will use.
+The AM335x is one of the Texas Intruments' ARM Cortex-A8 based processor family~\citep{AM335x}. This thesis will focus on the AM3358 processor, because the BeagleBone Black \citep{BBB} has this \cpu. The BeagleBone Black is the reference system this work will use for taking measurements.
 
 The AM335x processor family have four members (AM3359, AM3358, AM3357, AM3356) which have special unit called \emph{Programmable Realtime Unit and Industrial Communication SubSystem} (\pruss).
 
@@ -271,9 +271,43 @@ There are multiple versions of \pru{} hardware, and the generated image must map
 
 These memory regions are defined in a \verb+.cmd+ file, and necessary to compile an \elf{} image for the firmware loader.
 
-\subsection{Support library}
+\subsection{RPMSG library}
 
-To utilize the advanced communication between the host processor, and the \pru, specific frameworks needs to be used. These frameworks are not included in the \pru{} \cpp{} toolchain itself, but supported in the \emph{pru-software-support-package} \citep{TI_PRUSS_REPO}. This package contains the implementation of these  frameworks.
+To utilize the advanced communication between the host processor, and the \pru, the remote processor messaging library (\emph{rpmsg}) library can be used.
+
+This frameworks are not included in the \pru{} \cpp{} toolchain itself, but shipped with the \emph{pru-software-support-package} \citep{TI_PRUSS_REPO}. This library contains the implementation, and example usage of this library.
+
+The \emph{rpmsg} library have two components:
+\begin{itemize}
+	\item A kernel module, which provides the virtual interfaces for the host application.
+	\item A \cpl{} library, which the \pru{} can use to communicate with the host processor.
+\end{itemize}
+
+When a communication channel is created while loading the \pru{} code, a virtual device is created in the \emph{/dev} folder of Linux system. This virtual device can be used to communicate with the \pru{}. The usage of this \emph{/dev} is very straightforward, the virtual device is like any ordinal file. From the host application, this file can be opened, and messages can be written/read from this file. An example code is presented in \cref{lst:communication_sample}.
+
+\begin{lstlisting}[
+	float,
+	caption={Example communication code using the virtual device provided by \emph{rpmsg}},
+	label=lst:communication_sample,
+	language={C++}
+]
+#include <fstream>
+#include <iostream>
+#include <string>
+
+int main(int argc, const char * argv[]) {
+	std::ofstream rpmsg_stream;
+	rpmsg_stream.open("/dev/rpmsg_pru30");
+
+	for(int x=0; x<10000; ++x) {
+		for(int i=0; i<=6; ++i) {
+			rpmsg_stream << std::to_string(i) << std::endl;
+		}
+	}
+
+	return 0;
+}
+\end{lstlisting}
 
 \subsubsection{Makefile}
 

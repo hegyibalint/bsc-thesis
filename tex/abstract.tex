@@ -1,21 +1,33 @@
 \begin{otherlanguage}{magyar}
-  \paragraph*{Kivonat}
-  \phantomsection
-  \addcontentsline{toc}{chapter}{Kivonat}
-  \thispagestyle{plain}
+\paragraph*{Kivonat}
+\phantomsection{}
+\addcontentsline{toc}{chapter}{Kivonat}
+\thispagestyle{plain}
 
-  Magyar kivonat
+A mai szoftverrendszerek komplexitásának növekedésével olyan új, monitorozást megvalósító megoldásokra van szükség, amelyek képesek a rendszert megfigyelni  a működése közben is. Ezekben az új, monitorozást megvalósító megoldásokban kulcsfontosságú a skálázhatóság a legkisebb, begyágyazott rendszertől a többkomponensű komplex rendszerekig. Az komplex eseményfeldolgozás az egyike a monitorozást megvalósító technikáknak. A dolgozat munkája, hogy bemutassa ennek az alkalmazhatóságát.
 
-  \paragraph{Kulcsszavak} kulcsszavak
+A dolgozat fókusza a monitorokat reprezentáló automatákból való kódgenerálás, legfőképp beágyazott hardware-ek esetében. Ezekben a beágyazott eszközökben az erőforrások sokkal korlátozottabbak mint egy felhasználói számítógépnél. Az egyik lényeges kihívás a monitorok generálásában a kemény valós idejű tulajdonságok biztosítása, mivel kis rendszerekben a monitorozás maga kritikus mennyiségű időt vehet el a monitorozott folyamattól. Ezeknek a limitációknak a figyelembevételével a kódgenerátornak olyan kódot kell előállítania, ami kihasználja a platform, és az architektúra előnyeit.
+
+A dolgozat Eclipse alapú technológiákra építkezik, mint a komplex eseményfeldolgozást, és az automata előállítását megvalósító VIATRA keretrendszer, illetve az általános célú Xtend generátor nyelv amely alkalmas sablon alapú kódgenerátorok megvalósítására.
+
+Az ezeket a funkciókat ellátó kódgenerátor a Texas Instrumens cég BeagleBone Black elnevezésű, egylapkás számítógépen került tesztelésre. Ennek a számítógépnek a különlegessége a processzor mellé integrált valós idejű egység, amely segítségével megvalósítható egy szorosan csatolt, valós idejű monitorozás.
+
+\paragraph{Kulcsszavak} beágyazott rendszerek, Futásidejű verifikáció, kódgenerálás, komplexesemény-feldogozás, monitorozás
 \end{otherlanguage}
 
-\cleardoublepage
+\cleardoublepage{}
 
 \paragraph*{Abstract}
-\phantomsection
+\phantomsection{}
 \addcontentsline{toc}{chapter}{Abstract}
 \thispagestyle{plain}
 
-English abstract
+Due to the complexity of software systems of today, new monitoring approaches are needed in order to successfully observe the system in operation. These methods are required to be scalable for the smallest embedded systems as well as to complex multi-component architectures. Complex event processing-based monitoring is one of such monitoring solutions, and this thesis will demonstrate the capabilities of this method on a demonstrator application.
 
-\paragraph{Keywords} keywords
+This work focuses on the source code generation of these monitors from automata, more paticularly for embedded environments, where the system resources are highly constrained compared to a personal computer. One of the challenges of generating scalable monitors are providing hard real-time properties in all platforms, because monitoring in small systems might takes critical amount of time from the monitored process. With such limitations, the code generator must be aware of the architecture and platform configuration while generating the code.
+
+This thesis utilizes Eclipse-based technologies, such as the VIATRA framework for implementing the complex event processing logic and the corresponding automata, and the Xtend general purpose, template-based generation language for deriving source code.
+
+With these features, the completed generator is tested on a Texas Intrument's BeagleBone Black single board computer, which has a special realtime unit embedded next to the processor core, opening up possibilities for coupled, real-time monitoring.
+
+\paragraph{Keywords} code generation, complex event processing, embedded systems, monitoring, runtime verification
