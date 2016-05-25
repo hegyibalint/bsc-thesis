@@ -20,7 +20,7 @@ all:
 jenkins: clean all
 
 osx: all
-	open -a Skim pdf/$(PROJECTNAME).pdf
+	open -a Skim pdf/$(PROJECTNAME)-uncompressed.pdf
 
 clean:
 	rm -rf ./out

@@ -229,18 +229,18 @@ The code generator is implemented as Eclipse plugins. This decision is based on 
 
 The main project structure is the following:
 \begin{itemize}
-	\item \emph{hu.bme.mit.inf.cepgen.common:} While the current focus is on \cpl/\cpp{} language generation, the generic approach is to support other languages, and platforms. To help further development, this package provides abstract classes, and interfaces. With this abstraction level, further platforms and languages can be added with low impact on existing implementation.
-	\item \emph{hu.bme.mit.inf.cepgen.query:} This project contains all the \viatraq{} queries. These queries are placed in a separate project, to provide reusability. These patterns provides generic automaton related queries.
-	\item \emph{hu.bme.mit.inf.cepgen.pru:} This project is a concrete generator. This generator is for the \pru{} of the BeagleBone Black (\cref{ch:pru}).
+	\item \emph{hu.bme.mit.inf.cepgen.common:} While the current focus is on \cpl/\cpp{} language generation, a future goal is to support other languages, and platforms. To help further development, this plug-in provides abstract classes, and interfaces. With this abstraction level, further platforms and languages can be added with low implementation cost.
+	\item \emph{hu.bme.mit.inf.cepgen.query:} This project contains all the \viatraq{} queries. These queries are placed in a separate plug-in, to provide reusability. These patterns provide generic, automaton related queries.
+	\item \emph{hu.bme.mit.inf.cepgen.pru:} This project is a language specific (\cpl{}) generator for the \pru{} of the BeagleBone Black (\cref{ch:pru}).
 \end{itemize}
 
 \subsection{Generation workflow}
 
-The monitors are generated from an in-memory instance model of the automaton described in \cref{sec:metamodel}. This instance model is validated against current compiler constraints. The only constraint currently is the existence of epsilon transitions. If an epsilon transition is present in the automata, it means the automaton is non-deterministic. Because the code generator can only use deterministic automaton, it's a hard constraint.
+The monitors are generated from an in-memory instance model of the automaton described in \cref{sec:metamodel}. This instance model is validated against current compiler constraints. The only constraint currently the model validated against is the existence of epsilon transitions inside the automaton. If an epsilon transition is present in the automata, it means the automaton is non-deterministic. Because the code generator can only generate code from deterministic automaton. The violation of constrains result in an exception.
 
-After validation, the symbolic states generated to a \cpp{} enumeration. The reason why the symbolic events not contained in automatons is because the complex event processing nature. Defined events in the regular expression language describing patterns are defined globally. As a consequence, in the automaton these event types are global, shared between automatons. The used template is listed in \cref{lst:event_enumeration_template}.
+After validation, the symbolic states generated into a \cpp{} enumeration. The reason why the symbolic events are not contained in the automaton objects is because of the complex event processing nature. Defined events in the regular expression language describing the patterns are defined globally. As a consequence, the automaton share these event types between themselves. To make this share type safe, the symbolic events stored in a higher level of the hierarchy. The template used to generate this enumeration can be found in \cref{lst:event_enumeration_template}.
 
-As mentioned, with Xtend template expression features, templates are quite readable, and with the \texttt{SEPARATOR} attribute in \texttt{FOR}, it's very easy to add separation between items, instead of an error prone, boilerplate solution.
+As mentioned, with the template expression features of the Xtend language, generator templates are quite readable, and with the \texttt{SEPARATOR} attribute in the \texttt{FOR} control structure, it's very easy to add separation between items, instead of an error prone, boilerplate solution.
 
 \begin{lstlisting}[
 	float,
@@ -258,18 +258,18 @@ typedef enum {
 \end{lstlisting}
 
 \needspace{5ex}
-After generating the event enumerations, each automata can be processed separately. One very key point of \cpp{} code generation for the \pru{} is static behavior. Because the \pru{} is so limited in resources, the executor cannot having dynamic allocations. Automaton itself can be executed quite statically. The control structure which is efficient for the execution of an automata is the switch-case control structure. The following happens, when an event is handled:
+After generating the event enumerations, each automata can be processed separately. One very key point of the \cpp{} code generation is static behavior. Because the \pru{} is so limited in resources, the executor can not have dynamic allocations. The automaton itself can be executed quite statically. An efficient control structure for the execution of an automata is a switch-case control structure. The execution control structure have the following handling mechanism:
 \begin{enumerate}
-	\item A switch-case with the input event parameter.
-	\item An embedded switch-case inside each event cases, with the condition checking the currently active state. If a case matches to the stored currently active state, it means a transition can be fired. Before jumping to the next state, there might be other side effects of the transition.
+	\item A switch-case which selects the corresponding event case.
+	\item An embedded switch-case inside each event cases. This embedded control structure selects the corresponding active state. If a case exists, which matches the current active state, a transition can be fired. Before jumping to the next state, there might be other side effects of the transition:
 	\begin{itemize}
 		\item A transition might reset, or set a timer.
-		\item The state which the transition leads might be an acceptor state, meaning we must specially handle this transition.
+		\item The state which the transition leads might be an acceptor state, meaning we must specially handle this transition by calling the \emph{accept} method of the automata.
 	\end{itemize}
 	\item Set the active state to the state on the other end of the transition.
 \end{enumerate}
 
-By using \viatraq{} patterns, relations can be easily queried from a model, which is not present in the metamodel as references. An example is \cref{viatraq_example}. This query can collect out transitions, which is guarded by a specific symbolic event.
+By using \viatraq{} patterns, relations between states can be easily queried from a model. Queries are useful when a relation is needed, and is not present in the metamodel in a form of references. An example is \cref{lst:viatraq_example}. This query can collect out transitions, which is guarded by a specific symbolic event.
 
 \begin{lstlisting}[
 	float,
@@ -322,4 +322,6 @@ void Automaton_«a.name»::handleEvent(Event inputEvent) {
 }
 \end{lstlisting}
 
-With the collection of transitions having same symbolic events, the executable \cpp{} code can be generated. In the first solution, the template expressions called other template expressions, but this resulted in a non-sequential, hardly readable code. After this conclusion, the methods were moved into the main template code resulting in a monolithic template expression, which is far more readable.
+With the collection of transitions having same symbolic events, the executable \cpp{} code can be generated. In the first versions of the code generator, the template expressions called other template expressions, but this resulted in a non-sequential, hardly readable code.
+
+After this conclusion, the methods were moved into the main template code, resulting in a monolithic template expression, which resulted in a far more readable code, and more understandable program flow.
