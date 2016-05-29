@@ -98,10 +98,10 @@ This section briefly introduce the elements of the formal language, which is dev
 		A & Matching event A & A \\
 		A B & Matching event A and B, in strict order & AB \\
 		A \& B & Matching event A and B, non-ordered  & BA \\
-		A (A \& B) & Encapsulating the matches inside parentheses & AAB or ABA \\
-		A+ & At least once, captures all same events & A\ldots \\
-		A* & Captures all same events & AAAA\ldots \\
-		{A}<x> & The encapsulated expression should match in x time units & \\
+		A (A \& B) & Grouping expressions & AAB or ABA \\
+		A+ & 1 or more captured expression & A\ldots \\
+		A* & 0 or more captured expression & AAAA\ldots \\
+		{A}<x> & The expression should match in x time units & \\
 		\bottomrule
 	\end{tabular}
 	\label{fig:regex}
