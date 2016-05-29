@@ -17,7 +17,7 @@ This section will describe the creation, and properties of the automata during t
 
 We defined our test automata using the regular expression language introduced in \ref{sec:viatra_regex}. The \emph{AND} operator is the best way to create exponentially increasing automata with relatively small alphabet. An example for pattern declaration with regular expression is presented in \cref{lst:sample_regex}.
 The compiler while minimizing the automata realize this pattern like a bit vector of events. The pattern given do not have any constraint for the order of events, therefore the completeness of the pattern can be imagined like a bit vector of length $n$, where $n$ is equal to the size of alphabet, formally $n=|\Sigma|$. The pattern is completed, when every element of the bit vector have value of $1$.
-With every incoming event, the corresponding bit is toggled to $1$. If we have a bit vector of length $n$, and we would like to get all the permutation which results in a bit vector of $1$ values, we have $2^n$ different combination. Without minimalization, the size of the automata would be $n \cdot (n-1) \cdot (n-2) \ldots $ which is equal to $n!$.
+With every incoming event, the corresponding bit is toggled to $1$. If we have a bit vector of length $n$, and we would like to get all the permutation which results in a bit vector of $1$ values, we have $2^n$ different combination. Without minimization, the size of the automata would be $n \cdot (n-1) \cdot (n-2) \ldots $ which is equal to $n!$.
 
 \begin{lstlisting}[
 	float,
@@ -295,6 +295,6 @@ Because we know the assembly struct, a harsh estimation can be constructed to va
 
 \section{Conclusion}
 
-These measurements uncovered how many hidden factors affect the response, and performance of a system. The preemtive behavior of the operating system plays an important role, but frequency governors may induce jitter in the latency of the communication.
+These measurements uncovered how many hidden factors affect the response, and performance of a system. The preemptive behavior of the operating system plays an important role, but frequency governors may induce jitter in the latency of the communication.
 
 Apart from host side performance, the poll based communication illustrates how big is the time penalty of a \textls{DDR3} memory access. The test automation used in the measurements was the biggest which could be fitted inside the \pru{} instruction memory with $7 \cdot 2^7 = 896$ transitions total, $128$ transition possibility per event. The stepping of the automaton was handled under \si{1}{\mics}, therefore the automaton limited much by size of the automaton rather then the execution time of it.

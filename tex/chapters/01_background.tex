@@ -3,7 +3,7 @@
 \chapter{Background}
 \label{ch:background}
 
-Nowadays, the complexity of software systems is increasing. Even in safety-critical or real-time systems, we can reach a complexity level where we need computer aided analysis techniques to ensure correctness. With the introduction of Internet of Things (\iot), and new mobile communication technologies, systems are becoming mixed-critical. Such systems contain some components that are not checked for safety\,--because it's not possible, or it was not a design aspect --\,, but we need to make sure they.
+Nowadays, the complexity of software systems is increasing. Even in safety-critical or real-time systems, we can reach a complexity level where we need computer aided analysis techniques to ensure correctness. With the introduction of Internet of Things (\iot), and new mobile communication technologies, systems are becoming mixed-critical. Such systems contain some components that are not checked for safety --because it's not possible, or it was not a design aspect-- but we need to make sure they.
 
 \section{Embedded systems}
 
@@ -171,7 +171,7 @@ The models engineers produce are engineering models. The designers can understan
 
 It is common to transform the engineering models of the system into mathematically precise constructs. After the transformation, formal verification can be used, which can analyze the behavior of systems in a mathematically precise way.
 
-Model checking is a technique for verifying finite-state concurrent systems such as sequential circuit designs and communication protocols. It has a number of advantages over traditional approaches that are based on simulation, testing and deductive reasoning. In particular, model checking is automatic and usually quite fast. Also, if the design contains an eror, model checking will produce a counterexample that can be used to pinpoint the source of the error~\cite{mcmillan1993symbolic}.
+Model checking is a technique for verifying finite-state concurrent systems such as sequential circuit designs and communication protocols. It has a number of advantages over traditional approaches that are based on simulation, testing and deductive reasoning. In particular, model checking is automatic and usually quite fast. Also, if the design contains an error, model checking will produce a counterexample that can be used to pinpoint the source of the error~\cite{mcmillan1993symbolic}.
 
 The spreading of sensor network and various communication technologies results in an increasing amount of distributed systems. This leads to the growing demand for analysis and verification techniques.
 
@@ -456,5 +456,5 @@ Many frameworks, like the \viatra{} framework. Such frameworks can use the notif
 \begin{itemize}
 	\item The \viatrac{} framework contains a simulator, which can work on the compiled metamodel.
 	\item The work of \cite{TDK2015} present a similar solution, but the formalism behind the generation is a transition system. The monitor generated heavily utilizing \cpp{11} features, which is not available in many embedded platforms.
-	
+
 \end{itemize}

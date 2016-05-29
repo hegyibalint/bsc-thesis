@@ -222,7 +222,7 @@ Texas Instruments' main goal with this coprocessor was to maximize the determini
 
 \subsubsection{Execution}
 
-On the \pru, every instruction takes \SI{5}{\nano\second} to execute. This is an interesting design pattern, because on most architecture the execution cycle varies with instructions e.g.\ the \emph{JUMP} instruction always need more execution cycle than a simple addition. The \pru{} architecture is uniformial. This uniformity helps the static analysis of code, because there are no corner cases in the cycle counts.
+On the \pru, every instruction takes \SI{5}{\nano\second} to execute. This is an interesting design pattern, because on most architecture the execution cycle varies with instructions e.g.\ the \emph{JUMP} instruction always need more execution cycle than a simple addition. This uniformity helps the static analysis of code, because there are no corner cases in the cycle counts.
 
 There is no pipelining, and out-of-order execution, so the processor execute the machine code in the exact same order it was compiled.
 
@@ -245,7 +245,7 @@ In linux kernel v3.x, the firmware, and resource initialization is entirely the 
 \subsection{Linux kernel v4.x}
 \label{subsec:fw_loader_kernel4}
 
-From linux kernel 3.x to 4.x the entire framework structure changed. While 3.x version was completely custom, \ti{} developers moved forward to more standard linux framework like \emph{remoteproc} \citep{RPROC}. While remoteproc is harder to understand, it is a well documented framework.
+From linux kernel 3.x to 4.x the entire framework structure changed. While 3.x version was completely custom, \ti{} developers moved forward to more standard linux framework like \emph{remoteproc} \citep{RPROC}. While \emph{remoteproc} is harder to understand, it is a well documented framework.
 
 The biggest change from kernel 3.x is the move to kernel module level. Instead of writing a user-space application, the kernel loading is done by a kernel module. The kernel module is called \emph{pruss-remoteproc}, and is responsible of loading the kernel bundled into an Executable and Linkable Format (\elf{}) file inside the memory of the \pru. Because the loading is placed into kernelspace, and the module which loads it is uniform and not written by the programmer, some configuration method is needed. This method is described in the \cref{subs:linking}
 
@@ -383,7 +383,7 @@ It's a good practice to use this flag. The features previously listed are the ma
 
 \subsubsection{Memory overallocation issues}
 
-The error ''\verb|#10099-D: program will not fit into available memory.| listed in \cref{lst:example_overallocation} means the source code tries to overallocate a memory regions. The two common memory region which can be overallocated is the \iram{} or \dram{}.
+The error ''\verb|#10099-D: program will not fit into available memory.| listed in \cref{lst:example_overallocation} means the source code tries to overallocate a memory regions. The two common memory region which can be over-allocated is the \iram{} or \dram{}.
 
 \begin{lstlisting}[
 		float=hb,
@@ -397,7 +397,7 @@ available memory.  placement with alignment fails for section ".text" size
 PRU_IMEM     size: 0x2000       unused: 0x1fe4       max hole: 0x1fe4
 \end{lstlisting}
 
-In the particular case of \cref{lst:example_overallocation} the \verb|.text| section\footnote{The \verb|.text| section stores the machine code of the program.} is overallocated. The required size is \verb|0x21870|\ byte even if the max hole the linker can allocate is \verb|0x1fe4|\ byte. This example was caused by the inclusion of \verb|iostream| library, with embedded \cpp{} option disabled which would prevent this.
+In the particular case of \cref{lst:example_overallocation} the \verb|.text| section\footnote{The \verb|.text| section stores the machine code of the program.} is over-allocated. The required size is \verb|0x21870|\ byte even if the max hole the linker can allocate is \verb|0x1fe4|\ byte. This example was caused by the inclusion of \verb|iostream| library, with embedded \cpp{} option disabled which would prevent this.
 
 \section{Running the firmware}
 
@@ -435,7 +435,7 @@ struct my_resource_table pru_remoteproc_ResourceTable = {
 #endif /* _RSC_TABLE_PRU_H_ */
 \end{lstlisting}
 
-After the resource table is included in the main source file and the project is compiled, the final artifact \verb|pru.out| can be found in the \verb|gen| directory. This \verb|pru.out| file is an \elf{} file, and ready to be loaded into the pru.
+After the resource table is included in the main source file and the project is compiled, the final artifact \verb|pru.out| can be found in the \verb|gen| directory. This \verb|pru.out| file is an \elf{} file, and ready to be loaded into the \pru{}.
 
 To make the firmwares usable by the loader, the artifact files must be copied to the \verb|/lib/firmware/| folder. Naming conventions are used to differentiate between the two \pru{}:
 \begin{itemize}
