@@ -56,7 +56,7 @@ The first measurement was to measure the code size of an automaton with alphabet
 		\texttt{O4}   & $312$ &		$540$ &		$1060$ & 	$2592$ & 	$6308$  \\
 		\bottomrule
 	\end{tabular}
-	\label{fig:code_size}
+	\label{fig:code_size_table}
 \end{figure}
 
 \begin{figure}
@@ -78,7 +78,7 @@ The \texttt{clpru} compiler have five stages of optimization levels. These level
 \item \texttt{Ooff:} Disables all optimization.
 \end{itemize}
 
-\cref{fig:code_size} depicts a plot of the data contained in \cref{fig:code_size}. The code size compiled with \texttt{Ooff} and \texttt{O0} options have minor difference, while both optimization level ran out of the \si{8}{kB} program memory at alphabet size of $7$.
+\cref{fig:code_size} depicts a plot of the data contained in \cref{fig:code_size_table}. The code size compiled with \texttt{Ooff} and \texttt{O0} options have minor difference, while both optimization level ran out of the \si{8}{kB} program memory at alphabet size of $7$.
 
 The optimization level of \texttt{O1}, \texttt{O2}, and \texttt{O3} halves the code size, but there is no major code size reduction above \texttt{O1}. Level \texttt{O2}, \texttt{O3}, and \texttt{O4} generates practically the same code size.
 
