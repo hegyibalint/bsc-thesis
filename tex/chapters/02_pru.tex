@@ -363,10 +363,6 @@ This section will walk through the compilation workflow, and common pitfalls.
 
 With the provided makefile it's considerably easy to compile the application, the developer just need to execute the \verb|make all| command in the project root, where the Makefile is located. The Makefile will invoke the compiler with the required parameters.
 
-\subsection{Compilation errors}
-
-TODO Maybe some text here
-
 \subsection{\cpl{} or \cpp{} error codes}
 
 These errors are commonly associated with the syntax of the language, and not the specific compiler.
@@ -447,5 +443,3 @@ To make the firmwares usable by the loader, the artifact files must be copied to
 	\item \verb|am335x-pru1-fw| for \pru{} core 1
 \end{itemize}
 Therefore if one would like to load a firmware to the \pru{} core 0, the \elf{} file must be placed under the \verb|/lib/firmware/am335x-pru0-fw| path.
-
-TODO Console output from PRU loading

@@ -52,7 +52,7 @@ This example converts from a domain specific language of finite automation to th
 		\draw [thick, <-] (M1) -- (T1) node [midway, left] {\ttm};
 		\draw [thick, ->] (M2) -- (T2) node [midway, right] {\mtt};
 	\end{tikzpicture}
-	\caption{Workflow of}
+	\caption{Workflow of a real-world usage of code generation}
 \label{fig:model_transformation_cpp}
 \end{figure}
 
@@ -219,6 +219,28 @@ While the design process workflow is coupled to Eclipse, the \viatraq{} runtime 
 
 This section describe the code generator implemented for the metamodel described in \cref{sec:metamodel}.
 
+\subsection{Supported features}
+
+The metamodel support automaton formalism with temporal, and parametrized behavior. An important phase of development is the definition of the supported subset of the automata formalism, which can be generated.
+
+\subsubsection{Basic automaton}
+
+A basic automata mentioned here is the one defined in \cref{sec:automata}. Generating automaton from such formalism can be done in a way the generated code have very static, deterministic size. The only memory the executions needs is a value, which stores the active state of the automata. From this information, the automaton can be stepped by generating control structures.
+
+\subsubsection{Timed automaton}
+
+Timing can be achieved in a static way, like the basic automaton. States have clocks, and there is an event called \emph{symbolicTimeoutEvent}. To expand the basic automaton with timing, the automata must store the clock values. Notice, the number of clocks is determined in the compile process, meaning there is no dynamic allocation. All the memory the timed automata needs can be statically allocated.
+
+\subsubsection{Parametrized automaton}
+
+With parametrized automaton, one can't stay completely static. With every new parameter, some dynamic allocation should be done. In the worst case, these dynamically allocated regions never freed. With limited resources, there is a little room of error, and the data memory can be filled quickly with abandoned tokens.
+
+\subsubsection{Conclusion}
+
+Because of the complex behavior of the parametrized automaton, and the inevitable use of dynamically allocation with it, the code generator will use timed automaton as a target formalism. With this formalism, the memory need is known while compiling the automata.
+
+\subsection{Applied technologies}
+
 As mentioned before, generic simulation is one tool to execute automaton, but it's resource needs might exceed what is the hardware capable of. In this case, \mtc{} code generation is a good tool, which can be used to generate specific, efficient code.
 
 To maximize the flexibility of the generator, the code generation uses Xtend, as a generator language. With Xtend, and related technologies like \viatraq{}, a template-based code generator can be created. While Xtend can be used to generate code with template expressions, the language itself became a general purpose language, and instead of Java, the entire project is developed in Xtend.
@@ -257,6 +279,8 @@ typedef enum {
 } Event;
 \end{lstlisting}
 
+\subsection{Automata generation process}
+
 \needspace{5ex}
 After generating the event enumerations, each automata can be processed separately. One very key point of the \cpp{} code generation is static behavior. Because the \pru{} is so limited in resources, the executor can not have dynamic allocations. The automaton itself can be executed quite statically. An efficient control structure for the execution of an automata is a switch-case control structure. The execution control structure have the following handling mechanism:
 \begin{enumerate}
@@ -269,7 +293,7 @@ After generating the event enumerations, each automata can be processed separate
 	\item Set the active state to the state on the other end of the transition.
 \end{enumerate}
 
-By using \viatraq{} patterns, relations between states can be easily queried from a model. Queries are useful when a relation is needed, and is not present in the metamodel in a form of references. An example is \cref{lst:viatraq_example}. This query can collect out transitions, which is guarded by a specific symbolic event.
+By using \viatraq{} patterns, relations between states can be easily queried from a model. Queries are useful when a relation is needed, and is not present in the metamodel in a form of references. An example is \cref{lst:viatraq_example}. This query can collect out transitions, which is guarded by a specific symbolic event. The method which generates the simple automata is listed in \cref{lst:automata_handle_code}. Note this code have temporal sections, which will set, or reset clocks.
 
 \begin{lstlisting}[
 	float,
@@ -325,3 +349,44 @@ void Automaton_«a.name»::handleEvent(Event inputEvent) {
 With the collection of transitions having same symbolic events, the executable \cpp{} code can be generated. In the first versions of the code generator, the template expressions called other template expressions, but this resulted in a non-sequential, hardly readable code.
 
 After this conclusion, the methods were moved into the main template code, resulting in a monolithic template expression, which resulted in a far more readable code, and more understandable program flow.
+
+\subsection{Timer generation process}
+
+The instance model contains timing information, and this can be used to realize the timers of the automaton.
+
+With timed automata, the code generator must handle timers, and the timeout events. Because the timeout is an event, it would be obvious to generate the timeout transitions inside the \emph{handleEvent} method, but there is a problem: only the \emph{SymbolicInputEvent} class have a name as an unique identifier, the \emph{SymbolicTimeoutEvent} does not.
+
+To overcome this problem, a map is created, which generate an unique identifier to the clock. Because \emph{SymbolicTimeoutEvent} never handled by the user, the automaton handling divided into two methods:
+\begin{itemize}
+	\item \emph{handleEvent}, which have an input parameter, and step the automata according to this event.
+	\item \emph{handleTimers}, which decrease clocks, and if a timeout happens, it step the automata according to the transition with \emph{SymbolicTimeoutEvent} as a guard.
+\end{itemize}
+
+\begin{lstlisting}[
+	float,
+	caption={Partial code of the timer handle code},
+	label=lst:automata_timer_handle_code,
+	language={Xtend},
+	basicstyle=\ttfamily\small
+]
+void Automata_«a.name»::handleTimers() {
+	«FOR timer : a.timers»
+		if (this->timers[«timer2index.get(timer)»].active) {
+			this->timers[«timer2index.get(timer)»].t--;
+			if (this->timers[«timer2index.get(timer)»].t == 0) {
+				switch(this->activeState) {
+					«FOR t : TimerResetTransitionMatcher.on(qe).getAllValuesOft(timer)»
+						case «t.from.id»:
+							setActiveState(«t.to.id»);
+							resetTimer(«timer2index.get(timer)»);
+							break;
+					«ENDFOR»
+				}
+			}
+		}
+	«ENDFOR»
+}
+\end{lstlisting}
+
+
+This division between the two method have a benefit of decrease in execution time. The \emph{handleTimers} most of the cases is much smaller than \emph{handleEvent}, because many transitions might originate from a state, but a state with a clock can only have one \emph{SymbolicTimeoutEvent}, meaning the control structure defining the transitions are much smaller. The code generating the handler method of timers is listed in \cref{lst:automata_timer_handle_code}

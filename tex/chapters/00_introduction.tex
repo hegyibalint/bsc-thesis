@@ -2,3 +2,15 @@
 
 \chapter{Introduction}
 \label{ch:introduction}
+
+The problem of monitor generation in real-time embedded systems is a relevant, actual problem in computer engineering. This relevancy is due the fact of the rising popularity of IoT, which most of the time utilizes embedded, single board computers.
+
+Monitors need to be generated to this devices, but with tight resource constraints, it's not an easy task to generate the appropriate monitors. With a correct formalism, efficient monitors can be generated with resource needs appropriate for embedded hardwares. Such monitors could embedded inside small devices, providing runtime verification in critical applications.
+
+The additional features of this monitor generation tool is to support integration with Eclipse based technologies. Because Eclipse is a de-facto standard in the modeling industry, this approach opens up integrations with other modeling tools. Easy integration is an important role in model based software development methods, because in many cases, integration might take up bigger effort than the development process itself.
+
+This work utilizes a complex event based technology called \viatrac{} to generate automaton models which from this tool can generate executable code.
+
+In this work, the development, and technological background will be presented to implement this specific code generator tool. \cref{ch:background} introduces the technologies, and techniques necessary to implement such code generator. \cref{ch:pru} details a \cpu{} architecture, which utilizes an unusual hardware solution which is well suited for the needs of embedded monitoring. \cref{ch:monitoring} introduces monitoring as a process, and details agent-based monitoring. In the end of this chapter, the underlying formalism is described which is used to generate the code.
+\cref{ch:codegen} introduce the basic types of code generators, and technology suitable of creating such generators. In the end of this chapter, the code generation solution of this work is detailed.
+\cref{ch:measurements} measures the static, and dynamic properties of the code generator.

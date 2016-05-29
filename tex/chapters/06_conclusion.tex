@@ -2,3 +2,35 @@
 
 \chapter{Conclusion}
 \label{ch:conclusion}
+
+This work illustrated the capability of the writer to learn, and integrate new technologies, by implementing a code generation tool.
+
+The work introduced the basics of \emph{complex event processing}, and described the \viatrac{} backend. The tool developed integrates with this backend, to support code generation to embedded platforms, where processing and memory constrains are not allowing dynamic memory allocations. With this in mind, the timed automaton as the realizable subset was chosen.
+
+The work details the \pru{} processor architecture, and provides description of the properties, usage, and common problems encountered.
+
+The writer get knowledge of the \emph{Eclipse} development platform, and technologies utilizing it like:
+\begin{itemize}
+	\item \emf{} modeling framework
+	\item \viatra{} model query, and transformation framework
+	\item Xtend generator language
+\end{itemize}
+With this technology background, a code generator could be realized.
+
+The work detailed agent-based monitoring, and the underlying automaton formalism, discussing why automaton used as a main formalism in monitoring. The code generation project structure, and the generation workflow was presented.
+
+To test the implementation, measurements were done to check various performance counter of the implementation.
+
+\section{Future work}
+
+\begin{itemize}
+	\item Integration of two way communication, so an external automata can communicate with the host \viatrac{}.
+	\item Support of different architectures, like the \textls{ESP8266}	Wi-Fi capable embedded device, or \textls{AVR} and \textls{PIC} microcontrollers.
+	\item Supporting monitor generation from the \textls{UI}.
+\end{itemize}
+
+\section{Acknowledgement}
+
+The writer would like to thank my supervisort, {\selectlanguage{magyar}András Vörös} and {\selectlanguage{magyar}Márton Búr} for the continuous effort they put into this work.
+
+I would like to thank {\selectlanguage{magyar}László Balogh}, one of the developers of the \viatrac{} project for the guidance in understanding the framework, and {\selectlanguage{magyar}Kristóf Marussy} for the time he spent answering my questions.

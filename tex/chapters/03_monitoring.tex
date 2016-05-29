@@ -80,10 +80,39 @@ The example monitors a network communication. The monitored component sends a re
 \label{fig:example_monitoring_basics}
 \end{figure}
 
-\section{\viatrac{} automaton}
-\label{sec:metamodel}
+\section{\viatrac{}}
+
+The \viatrac{} is a complex event processing frameworks, based on Eclipse technologies such EMF, and \viatraq{}. \viatrac{} uses regular expression to define patterns. With regular expression, the developer gets an expressive formalism. Existing knowledge can be used while using regular expressions because of it's widespread usage in text matching. The \viatrac{} formalism in most of the part follows the syntax of text based regex matching.
+
+\subsection{\viatrac{} regex formalism}
+\label{sec:viatra_regex}
+
+This section briefly introduce the elements of the formal language, which is developed as a work of \cite{laszlo}. An expression may consists of the elements denoted in \cref{fig:regex}.
+\begin{figure}
+	\centering
+	\caption{Code size in bytes with respect to compiler optimization levels, and alphabet size}
+	\begin{tabular}{l l l}
+		\toprule
+		Regex & Explanation & Example \\
+		\midrule
+		A & Matching event A & A \\
+		A B & Matching event A and B, in strict order & AB \\
+		A \& B & Matching event A and B, non-ordered  & BA \\
+		A (A \& B) & Encapsulating the matches inside parentheses & AAB or ABA \\
+		A+ & At least once, captures all same events & A\ldots \\
+		A* & Captures all same events & AAAA\ldots \\
+		{A}<x> & The encapsulated expression should match in x time units & \\
+		\bottomrule
+	\end{tabular}
+	\label{fig:regex}
+\end{figure}
+
+\subsection{\viatrac{} automaton}
+\label{sec:}
 
 This section will introduce the automaton metamodel of the \viatrac{}. This metamodel is a very fundamental to the code generation process, because compiled regular expressions are compiled as an instance model of this metamodel.
+
+\subsubsection{Basic automaton partial model}
 
 \begin{figure}[h]
 	\centering
@@ -99,6 +128,8 @@ This section will introduce the automaton metamodel of the \viatrac{}. This meta
 	\item Transitions interconnect states. The transition have an incoming, and outgoing state reference. Transitions can have guards, which can be symbolic, and later on, related to timing.
 	\item EpsilonTransition is a special kind of transition, which is used in the compilation process. A non-deterministic automaton might contain epsilon transitions, but the code-generation this thesis implements works on a deterministic automaton, therefore this kind of transition will not be present in the instance models.
 \end{itemize}
+
+\subsubsection{Timing additions to the automaton model}
 
 \begin{figure}[h]
 	\centering

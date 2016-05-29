@@ -157,8 +157,7 @@ The V model is a traditional approach in the software design process. The V mode
 
 The Y model (\cref{fig:y_model}) depicts a basic workflow of model based software development.
 
-Compared to V model, Y model generates code from the refined component model. The reason behind\ldots
-TODO V model comparsion
+Compared to V model, Y model moves to a purely model-based solution. In the V model, the developer might use modeling tools, and implement the components by hand, with the aid of the models. On the other hand, Y model is a pure modeling process. A consequence of this approach is the transformability of the models. Many elements, like the V\&V elements can be generated from other elements.
 
 Every design level has it's own design rules it must conform to. The detailed levels of the system must be traceable to the upper levels. The artifact of the design process is the generated code, and generated test cases.
 
@@ -178,7 +177,7 @@ The spreading of sensor network and various communication technologies results i
 
 \subsection{Runtime verification}
 
- design time verification, which is performed while developing the software components, runtime verification checks the systems behavior according to the system specification during operation.
+Design time verification, which is performed while developing the software components, runtime verification checks the systems behavior according to the system specification during operation.
 
 Runtime verification can be used to detect errors in the system runtime. These errors might originate from:
 \begin{itemize}
@@ -199,7 +198,7 @@ The main purpose of runtime verification is to detect errors, but it can also ut
 	\item Recovery-based. The monitor contains actions, and these actions can be fired by errors to restore the system operation.
 \end{itemize}
 
-TODO Valami szép befejezés
+With these techniques by monitoring the current state of the system, runtime verification can detect, and in some special cases correct the erroneous behavior of the system.
 
 \section{Automata}
 \label{sec:automata}
@@ -450,4 +449,12 @@ Many frameworks, like the \viatra{} framework. Such frameworks can use the notif
 	      	\item Model code generation. The framework can generate Java classes, which can be used from any Java application.
 	      	\item Editor code generation. A generated editor as an Eclipse plugin, which gives the developer a basic tool to assemble an instance model.
 	      \end{itemize}
+\end{itemize}
+
+\section{Related work}
+
+\begin{itemize}
+	\item The \viatrac{} framework contains a simulator, which can work on the compiled metamodel.
+	\item The work of \cite{TDK2015} present a similar solution, but the formalism behind the generation is a transition system. The monitor generated heavily utilizing \cpp{11} features, which is not available in many embedded platforms.
+	
 \end{itemize}
