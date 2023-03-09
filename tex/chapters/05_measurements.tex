@@ -78,7 +78,7 @@ The \texttt{clpru} compiler have five stages of optimization levels. These level
 \item \texttt{Ooff:} Disables all optimization.
 \end{itemize}
 
-\cref{fig:code_size} depicts a plot of the data contained in \cref{fig:code_size_table}. The code size compiled with \texttt{Ooff} and \texttt{O0} options have minor difference, while both optimization level ran out of the \si{8}{kB} program memory at alphabet size of $7$.
+\cref{fig:code_size} depicts a plot of the data contained in \cref{fig:code_size_table}. The code size compiled with \texttt{Ooff} and \texttt{O0} options have minor difference, while both optimization level ran out of the \qty{8}{kB} program memory at alphabet size of $7$.
 
 The optimization level of \texttt{O1}, \texttt{O2}, and \texttt{O3} halves the code size, but there is no major code size reduction above \texttt{O1}. Level \texttt{O2}, \texttt{O3}, and \texttt{O4} generates practically the same code size.
 
@@ -154,7 +154,7 @@ The measurement contains 3 datasets.
 
 \begin{figure}
 	\centering
-	\caption{Measurement statistics in \si{\mics}}
+	\caption{Measurement statistics in \unit{\micro\second}}
 	\begin{tabular}{l c c c}
 		\toprule
 		& Min & Median & Max \\
@@ -175,9 +175,9 @@ The measurement contains 3 datasets.
 
 \subsection{Evaluation}
 
-The measurement uncovered some interesting properties, which can be traced back to the operating system. Generally all measurements have their median value very close to the minimal value. This means the most of the time, the sending time was consistent. The outliers mark the context switches of the operating system. The biggest time between messages in the measurement was \si{135}{\mics}. This means if the automaton have a millisecond based timing, lag caused by context switching should not be an issue. Note that the system was running this task only, therefore if other tasks are running with high resource needs, this value might increase.
+The measurement uncovered some interesting properties, which can be traced back to the operating system. Generally all measurements have their median value very close to the minimal value. This means the most of the time, the sending time was consistent. The outliers mark the context switches of the operating system. The biggest time between messages in the measurement was \qty{135}{\micro\second}. This means if the automaton have a millisecond based timing, lag caused by context switching should not be an issue. Note that the system was running this task only, therefore if other tasks are running with high resource needs, this value might increase.
 
-Measurement 2 is a smaller dataset than measurement 1, the only change done was to the \texttt{BUFFER\_SIZE} definition. After taking the measurements again with the same result in the median, the final conclusion was found. The Linux kernel is doing clock scaling to save energy. The kernel have a discrete set of frequencies (\si{300}{\MHz}, \si{600}{\MHz}, \si{720}{\MHz}, \si{800}{\MHz}, \si{1000}{\MHz}), and before execution, the system is idle, therefore the kernel scales the \cpu{} back to \si{300}{\MHz}. When the benchmarking run with a small sample, the warmup loops get executed faster than the reaction time of the operating system resulting in a bigger overhead.
+Measurement 2 is a smaller dataset than measurement 1, the only change done was to the \texttt{BUFFER\_SIZE} definition. After taking the measurements again with the same result in the median, the final conclusion was found. The Linux kernel is doing clock scaling to save energy. The kernel have a discrete set of frequencies (\qty{300}{\MHz}, \qty{600}{\MHz}, \qty{720}{\MHz}, \qty{800}{\MHz}, \qty{1000}{\MHz}), and before execution, the system is idle, therefore the kernel scales the \cpu{} back to \qty{300}{\MHz}. When the benchmarking run with a small sample, the warmup loops get executed faster than the reaction time of the operating system resulting in a bigger overhead.
 
 Measurement 3 shows the performance of a communication, where the \pru{} using poll based message receiving. This means the \pru{} will access the \textls{DDR3} memory trough the \textls{L3} interconnection bus which has non-deterministic behavior. The latency of the bus, and memory might vary with the system load.
 The interrupt based solution have an interrupt flag, which can be set from the host processor. In the code, this interrupt flag prevents the unnecessary checks to the \textls{DDR3} memory, increasing the performance by approximately a factor of 50.
@@ -198,16 +198,16 @@ This measurement motivated to test the effect of different \cpu{} clocks further
 
 \begin{figure}
 	\centering
-	\caption{Statistics of message overhead on differency \cpu{} frequencies in \si{\mics}}
+	\caption{Statistics of message overhead on differency \cpu{} frequencies in \unit{\micro\second}}
 	\begin{tabular}{l c c c}
 		\toprule
 		Freq & Min & Median & Max \\
 		\midrule
-		\si{300}{\MHz}  & 137.0 & 223.7 & 2335.0 \\
-		\si{600}{\MHz}  & 66.21 & 68.33 & 249.92 \\
-		\si{720}{\MHz}  & 56.08 & 57.38 & 172.08 \\
-		\si{800}{\MHz}  & 50.92 & 51.96 & 143.58 \\
-		\si{1000}{\MHz} & 41.54 & 42.38 & 118.62 \\
+		\qty{300}{\MHz}  & 137.0 & 223.7 & 2335.0 \\
+		\qty{600}{\MHz}  & 66.21 & 68.33 & 249.92 \\
+		\qty{720}{\MHz}  & 56.08 & 57.38 & 172.08 \\
+		\qty{800}{\MHz}  & 50.92 & 51.96 & 143.58 \\
+		\qty{1000}{\MHz} & 41.54 & 42.38 & 118.62 \\
 		\bottomrule
 	\end{tabular}
 \label{fig:rpmsg_freq_stats}
@@ -222,7 +222,7 @@ This measurement motivated to test the effect of different \cpu{} clocks further
 
 \subsection{Evaluation}
 
-Starting from 600MHz, the decrease in the overhead is proportional to the frequency of the \cpu{}, but interestingly \si{300}{\MHz} shows a bigger increase in the execution time of message sending. Another interesting value showing this discrepancy is the maximal time difference at \si{300}{\MHz} (\cref{fig:rpmsg_freq_stats}). Currently we are unable to explain the reason of this anomaly.
+Starting from 600MHz, the decrease in the overhead is proportional to the frequency of the \cpu{}, but interestingly \qty{300}{\MHz} shows a bigger increase in the execution time of message sending. Another interesting value showing this discrepancy is the maximal time difference at \qty{300}{\MHz} (\cref{fig:rpmsg_freq_stats}). Currently we are unable to explain the reason of this anomaly.
 
 \section{Event execution time}
 
@@ -272,7 +272,7 @@ In the case of the compiled automata, there might be execution time deviations b
 
 \begin{figure}
 	\centering
-	\caption{Statistics of message overhead on differency \cpu{} frequencies in \si{\mics}}
+	\caption{Statistics of message overhead on differency \cpu{} frequencies in \unit{\micro\second}}
 	\begin{tabular}{l c c c}
 		\toprule
 		Event & Measured div & Time base & Elapsed time \\
@@ -291,10 +291,10 @@ In the case of the compiled automata, there might be execution time deviations b
 
 \subsection{Evaluation}
 
-Because we know the assembly struct, a harsh estimation can be constructed to validate the results. The states of the test automata have transitions with all of the input events, therefore the number of transition outgoing from every transition is $2^7=128$. The control flow of a branch consists of 2 instructions. An instruction takes \si{5}{\ns}, therefore the approximated time to execute the automaton is $128 \cdot \si{5}{ns} = \si{640}{\ns} = 0.6\mics$. This is a rough estimate of the execution time, because it does not include additional instructions and calls, but the measured data in \cref{fig:rpmsg_exec_stats} is close to the value estimated.
+Because we know the assembly struct, a harsh estimation can be constructed to validate the results. The states of the test automata have transitions with all of the input events, therefore the number of transition outgoing from every transition is $2^7=128$. The control flow of a branch consists of 2 instructions. An instruction takes \qty{5}{\nano\second}, therefore the approximated time to execute the automaton is $128 \cdot \qty{5}{\nano\second} = \qty{640}{\nano\second} = \qty{0.6}{\micro\second}$. This is a rough estimate of the execution time, because it does not include additional instructions and calls, but the measured data in \cref{fig:rpmsg_exec_stats} is close to the value estimated.
 
 \section{Conclusion}
 
 These measurements uncovered how many hidden factors affect the response, and performance of a system. The preemptive behavior of the operating system plays an important role, but frequency governors may induce jitter in the latency of the communication.
 
-Apart from host side performance, the poll based communication illustrates how big is the time penalty of a \textls{DDR3} memory access. The test automation used in the measurements was the biggest which could be fitted inside the \pru{} instruction memory with $7 \cdot 2^7 = 896$ transitions total, $128$ transition possibility per event. The stepping of the automaton was handled under \si{1}{\mics}, therefore the automaton limited much by size of the automaton rather then the execution time of it.
+Apart from host side performance, the poll based communication illustrates how big is the time penalty of a \textls{DDR3} memory access. The test automation used in the measurements was the biggest which could be fitted inside the \pru{} instruction memory with $7 \cdot 2^7 = 896$ transitions total, $128$ transition possibility per event. The stepping of the automaton was handled under \qty{1}{\micro\second}, therefore the automaton limited much by size of the automaton rather then the execution time of it.

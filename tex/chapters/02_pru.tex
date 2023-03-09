@@ -128,18 +128,18 @@ The basic properties of the AM335x \pruss{} (be warned, there are previous gener
 \begin{itemize}
 	\item 2 \pru{} processor per \pruss{}:
 	\begin{itemize}
-		\item \SI{32}{\bit} Harward architecture, without pipelining
-		\item \SI{200}{\mega\hertz} clock speed, all instruction executed in \SI{5}{\nano\second}
-		\item \SI{8}{\kilo\byte} instruction memory (\iram)
-		\item \SI{8}{\kilo\byte} data memory (\dram)
-		\item \SI{12}{\kilo\byte} shared memory between the two processor
+		\item \qty{32}{\bit} Harward architecture, without pipelining
+		\item \qty{200}{\mega\hertz} clock speed, all instruction executed in \qty{5}{\nano\second}
+		\item \qty{8}{\kilo\byte} instruction memory (\iram)
+		\item \qty{8}{\kilo\byte} data memory (\dram)
+		\item \qty{12}{\kilo\byte} shared memory between the two processor
 		\item Up to 17 input, and 16 output
 	\end{itemize}
 	\item An interrupt controller shared between the \pru{} cores
 	\item Access to the system peripherals, e.g.: DRAM, GPIO
 	\begin{itemize}
 		\item System DRAM access is possible, but nondeterministic
-		\item GPIO handling is direct, meaning I/O can be toggled with \SI{5}{\nano\second} resolution.\footnote{The sustainable maximal frequency achievable is \SI{50}{\mega\hertz}, because the toggle loop takes 4 instructions to execute.}
+		\item GPIO handling is direct, meaning I/O can be toggled with \qty{5}{\nano\second} resolution.\footnote{The sustainable maximal frequency achievable is \qty{50}{\mega\hertz}, because the toggle loop takes 4 instructions to execute.}
 	\end{itemize}
 \end{itemize}
 
@@ -222,7 +222,7 @@ Texas Instruments' main goal with this coprocessor was to maximize the determini
 
 \subsubsection{Execution}
 
-On the \pru, every instruction takes \SI{5}{\nano\second} to execute. This is an interesting design pattern, because on most architecture the execution cycle varies with instructions e.g.\ the \emph{JUMP} instruction always need more execution cycle than a simple addition. This uniformity helps the static analysis of code, because there are no corner cases in the cycle counts.
+On the \pru, every instruction takes \qty{5}{\nano\second} to execute. This is an interesting design pattern, because on most architecture the execution cycle varies with instructions e.g.\ the \emph{JUMP} instruction always need more execution cycle than a simple addition. This uniformity helps the static analysis of code, because there are no corner cases in the cycle counts.
 
 There is no pipelining, and out-of-order execution, so the processor execute the machine code in the exact same order it was compiled.
 

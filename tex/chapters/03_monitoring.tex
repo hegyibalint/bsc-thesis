@@ -52,7 +52,7 @@ As mentioned before, a practical formalism for monitoring purposes is the automa
 
 To illustrate how a reduced model can help the monitoring of a complex system, let's review a simple monitor automata (\cref{sec:automata}) depicted in \cref{fig:example_monitoring_basics}.
 
-The example monitors a network communication. The monitored component sends a request\,--thus entering state \emph{2}--\,and waits for response. If the response arrived before the \SI{10}{\ms} elapsed, the automata returns to state \emph{1}. If the wait for the response exceeds the \SI{10}{ms} time window, the automata enters into the \emph{ERROR} state.
+The example monitors a network communication. The monitored component sends a request\,--thus entering state \emph{2}--\,and waits for response. If the response arrived before the \qty{10}{\ms} elapsed, the automata returns to state \emph{1}. If the wait for the response exceeds the \qty{10}{ms} time window, the automata enters into the \emph{ERROR} state.
 
 \begin{figure}[h]
 	\centering
@@ -73,7 +73,7 @@ The example monitors a network communication. The monitored component sends a re
 		\draw (B) edge [bend left]
 			node [sloped, midway, below] {response received} (A);
 		\draw (B) edge [bend left]
-			node [sloped, midway, above] {after \SI{10}{\ms}} (C);
+			node [sloped, midway, above] {after \qty{10}{\ms}} (C);
 
 	\end{tikzpicture}
 	\caption{Simple monitoring example}
