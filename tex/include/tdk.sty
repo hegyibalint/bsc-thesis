@@ -152,18 +152,6 @@
 \DeclareRobustCommand{\labelvref}{\cref@vref{labelcref}}
 \DeclareRobustCommand{\labelfullref}{\cref@fullref{labelcref}}
 
-% Only number referred equations
-\RequirePackage{autonum}
-% Make autonum cleveref- and varioref-aware
-\autonum@generatePatchedReferenceCSL{Cref}
-\autonum@generatePatchedReferenceCSL{labelcref}
-\autonum@generatePatchedReferenceCSL{vref}
-\autonum@generatePatchedReferenceCSL{Vref}
-\autonum@generatePatchedReferenceCSL{labelvref}
-\autonum@generatePatchedReferenceCSL{fullref}
-\autonum@generatePatchedReferenceCSL{Fullref}
-\autonum@generatePatchedReferenceCSL{labelfullref}
-
 % Do not print anything if the referred label is near.
 \renewcommand*{\reftextfaceafter}{}
 \renewcommand*{\reftextfacebefore}{}

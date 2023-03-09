@@ -11,4 +11,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: print
-          path: MScThesis.pdf
+          path: out/BScThesis.pdf
