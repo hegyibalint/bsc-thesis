@@ -7,7 +7,7 @@ jobs:
     container: aergus/latex
     steps:
       - uses: actions/checkout@v3
-      - run: latexmk -pdf MScThesis.tex
+      - run: latexmk -pdf tex/main.tex
       - uses: actions/upload-artifact@v3
         with:
           name: print
